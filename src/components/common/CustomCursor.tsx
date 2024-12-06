@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { motion, useSpring, useMotionValue } from 'framer-motion'
 
 interface CursorProps {
@@ -16,9 +16,9 @@ export const CustomCursor: React.FC<CursorProps> = ({ zIndex = 9999 }) => {
   const cursorY = useMotionValue(-100)
 
   const springConfig = useMemo(() => ({ 
-    damping: 15, 
+    damping: 20, 
     stiffness: 300, 
-    mass: 0.1 
+    mass: 0.2 
   }), [])
 
   const cursorXSpring = useSpring(cursorX, springConfig)
@@ -36,13 +36,22 @@ export const CustomCursor: React.FC<CursorProps> = ({ zIndex = 9999 }) => {
     return mobileCheck
   }, [])
 
-  // Optimized mouse move handler
+  // Store the mouse position in a ref to prevent excess re-renders
+  const mousePos = useRef({ x: -100, y: -100 })
+
+  // Optimized mouse move handler using requestAnimationFrame
   const moveCursor = useCallback((e: MouseEvent) => {
-    cursorX.set(e.clientX)
-    cursorY.set(e.clientY)
+    mousePos.current.x = e.clientX
+    mousePos.current.y = e.clientY
+  }, [])
+
+  const updateCursorPosition = useCallback(() => {
+    cursorX.set(mousePos.current.x)
+    cursorY.set(mousePos.current.y)
+    requestAnimationFrame(updateCursorPosition)
   }, [cursorX, cursorY])
 
-  // Hover detection with more comprehensive selector
+  // Hover detection with a more comprehensive selector
   const handleHoverStart = useCallback((e: MouseEvent) => {
     const target = e.target as HTMLElement
     const isInteractive = 
@@ -76,6 +85,8 @@ export const CustomCursor: React.FC<CursorProps> = ({ zIndex = 9999 }) => {
       // Disable default cursor
       document.body.style.cursor = 'none'
 
+      requestAnimationFrame(updateCursorPosition) // Start the animation frame loop
+
       return () => {
         window.removeEventListener('mousemove', moveCursor)
         document.removeEventListener('mouseover', handleHoverStart)
@@ -85,7 +96,7 @@ export const CustomCursor: React.FC<CursorProps> = ({ zIndex = 9999 }) => {
         document.body.style.cursor = 'auto'
       }
     }
-  }, [isMobile, isClient, moveCursor, handleHoverStart, handleHoverEnd])
+  }, [isMobile, isClient, moveCursor, handleHoverStart, handleHoverEnd, updateCursorPosition])
 
   // No render if mobile or not client-side
   if (isMobile || !isClient) return null
@@ -107,18 +118,18 @@ export const CustomCursor: React.FC<CursorProps> = ({ zIndex = 9999 }) => {
         <motion.div
           className="relative flex items-center justify-center"
           animate={{
-            scale: isHovering ? 1.5 : 1,
-            opacity: isHovering ? 0.8 : 1,
+            scale: isHovering ? 1.7 : 1,
+            opacity: isHovering ? 0.75 : 1,
           }}
           transition={{ duration: 0.2, ease: "easeInOut" }}
         >
           <motion.div 
-            className="absolute w-8 h-8 bg-primary rounded-full opacity-20"
-            animate={{ scale: isHovering ? 1.2 : 1 }}
+            className="absolute w-10 h-10 bg-primary rounded-full opacity-20"
+            animate={{ scale: isHovering ? 1.3 : 1 }}
             transition={{ duration: 0.2, ease: "easeInOut" }}
           />
           <motion.div 
-            className="w-4 h-4 bg-primary rounded-full"
+            className="w-5 h-5 bg-primary rounded-full"
             animate={{ scale: isHovering ? 0.8 : 1 }}
             transition={{ duration: 0.2, ease: "easeInOut" }}
           />
@@ -137,7 +148,7 @@ export const CustomCursor: React.FC<CursorProps> = ({ zIndex = 9999 }) => {
           transform: `translateX(${cursorX.get()}px) translateY(${cursorY.get()}px)`
         }}
       >
-        <div className="w-2 h-2 bg-primary rounded-full opacity-50" />
+        <div className="w-3 h-3 bg-primary rounded-full opacity-60" />
       </motion.div>
     </>
   )

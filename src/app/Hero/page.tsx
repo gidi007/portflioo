@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useSpring, useTransform } from 'framer-motion';
-import { Download, Send, Linkedin, Github, Twitter, ChevronDown } from 'lucide-react';
+import { Download, Images, Linkedin, Github, Twitter, ChevronDown } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import AnimatedProfile from '../Hero/AnimatedProfile';
 import Modal from '../Hero/Modal';
@@ -9,9 +9,11 @@ import { useModal } from '@/hooks/use-modal';
 import { Button } from '@/components/ui/button';
 
 const images = [
-  { src: '/path-to-image-1.jpg', alt: 'Image 1 description', link: 'https://example.com/1' },
-  { src: '/path-to-image-2.jpg', alt: 'Image 2 description', link: 'https://example.com/2' },
-  { src: '/path-to-image-3.jpg', alt: 'Image 3 description', link: 'https://example.com/3' },
+  { src: '/images/hero-modal/pic1.jpg', alt: 'Website with stunning layout', link: 'https://www.upwork.com/freelancers/~01a6f25e401b07c37c' },
+  { src: '/images/hero-modal/pic2.jpg', alt: 'Website with impressive styling', link: 'https://www.upwork.com/freelancers/~01a6f25e401b07c37c' },
+  { src: '/images/hero-modal/pic3.jpg', alt: 'Image 3 description', link: 'https://www.upwork.com/freelancers/~01a6f25e401b07c37c' },
+  { src: '/images/hero-modal/pic4.jpg', alt: 'Image 3 description', link: 'https://www.upwork.com/freelancers/~01a6f25e401b07c37c' },
+  { src: '/images/hero-modal/pic5.jpg', alt: 'Image 3 description', link: 'https://www.upwork.com/freelancers/~01a6f25e401b07c37c' },
 ];
 
 const SocialLinks = () => {
@@ -97,7 +99,7 @@ const ScrollIndicator = () => (
     >
       <ChevronDown className="w-6 h-6 text-primary" />
     </motion.div>
-    <span className="text-sm text-gray-500 dark:text-gray-400 mt-2">see more about me!    </span>
+    <span className="text-sm text-gray-500 dark:text-gray-400 mt-2">More about me!    </span>
   </motion.div>
 );
 
@@ -180,8 +182,8 @@ export default function HeroSection() {
                onClick={() => openModal()}
                 className="flex-1 h-12 rounded-full bg-primary hover:bg-primary/90 text-white shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                <span>Get In Touch</span>
-                <Send className="w-4 h-4 ml-2" />
+                <span>Gallery</span>
+                <Images className="w-4 h-4 ml-2" />
               </Button>
               
               <Button
