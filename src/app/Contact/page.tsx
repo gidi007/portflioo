@@ -131,8 +131,8 @@ export default function Contact() {
 
       <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-6xl">
         <SectionHeader
-          title="GET IN"
-          highlight="TOUCH"
+          title="GET IN "
+          highlight=" TOUCH"
           shadowText="CONTACT"
         />
 

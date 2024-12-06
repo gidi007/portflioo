@@ -868,7 +868,7 @@ export default function AdvancedPortfolioSection() {
             <SectionHeader
               title="MY"
               highlight="PORTFOLIO"
-              shadowText="WORKS"
+              shadowText="WORK"
             />
 
             {/* Sticky Category Filter with Enhanced Animations */}

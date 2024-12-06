@@ -2,52 +2,41 @@ export const theme = {
   colors: {
     primary: {
       DEFAULT: '#FFD700', // Gold
-      light: '#FFEB3C', // Bright Gold
-      dark: '#CCAC00', // Deep Gold
+      light: '#FFEB3C',   // Bright Gold
+      dark: '#CCAC00',    // Deep Gold
     },
     secondary: {
       DEFAULT: '#192134', // Navy Blue
-      light: '#283345', // Muted Navy
-      dark: '#121928', // Midnight Blue
+      light: '#283345',   // Muted Navy
+      dark: '#121928',    // Midnight Blue
     },
     background: {
       DEFAULT: '#0A1929', // Deep Navy
-      light: '#192134', // Lighter Navy
-      dark: '#050F1E', // Deep Background
+      light: '#192134',   // Lighter Navy
+      dark: '#050F1E',    // Deep Background
     },
     foreground: {
       DEFAULT: '#FFFFFF', // White
       muted: 'rgba(255, 255, 255, 0.7)', // Muted White
-      accent: '#4ADE80', // Green Highlight
+      accent: '#4ADE80',  // Green Highlight
     },
     border: {
       DEFAULT: '#FFD700', // Gold Border
       light: 'rgba(255, 215, 0, 0.5)', // Muted Gold
     },
-    accent: {
-      DEFAULT: '#FFD700',
-      muted: 'rgba(255, 215, 0, 0.5)',
-    },
     status: {
-      success: '#22C55E',
-      warning: '#EAB308',
-      error: '#EF4444',
-      info: '#3B82F6',
-    },
-    code: {
-      background: '#0A1929',
-      text: '#FFFFFF',
-      keyword: '#EAB308',
-      string: '#22C55E',
-      number: '#3B82F6',
+      success: '#22C55E', // Green
+      warning: '#EAB308', // Yellow
+      error: '#EF4444',   // Red
+      info: '#3B82F6',    // Blue
     },
   },
-  fonts: {
+  fontFamily: {
     heading: ['Poppins', 'sans-serif'], // Font for headings
-    body: ['Roboto', 'sans-serif'], // Font for body
+    body: ['Roboto', 'sans-serif'],    // Font for body text
     mono: ['Fira Code', 'monospace'], // Monospace font
   },
-  shadows: {
+  boxShadow: {
     sm: '0 1px 2px rgba(0, 0, 0, 0.1)', // Small shadow
     md: '0 4px 6px rgba(0, 0, 0, 0.15)', // Medium shadow
     lg: '0 8px 12px rgba(0, 0, 0, 0.2)', // Large shadow

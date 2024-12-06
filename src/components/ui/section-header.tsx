@@ -21,8 +21,8 @@ export function SectionHeader({
 
   const letterVariants = {
     initial: { y: 0, opacity: 1 },
-    hover: { 
-      y: -30, 
+    hover: {
+      y: -30,
       opacity: 0,
       transition: { duration: 0.3, ease: "easeInOut" }
     },
@@ -35,8 +35,8 @@ export function SectionHeader({
 
   const titleVariants = {
     initial: { y: 30, opacity: 0 },
-    hover: { 
-      y: 0, 
+    hover: {
+      y: 0,
       opacity: 1,
       transition: { duration: 0.3, ease: "easeInOut", delay: 0.1 }
     },
@@ -48,25 +48,27 @@ export function SectionHeader({
   }
 
   return (
-    <div 
+    <div
       className={cn("relative text-center mb-12 overflow-hidden cursor-pointer", className)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight relative">
+      <div className="flex justify-center items-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight relative">
         <AnimatePresence mode="wait">
+          {/* Alternating between shadow and title text */}
           <motion.div
-            key={isHovered ? "title" : "shadow"}
-            className="relative h-[1.2em]"
+            key={isHovered ? "shadow" : "title"}  
+            className="relative h-[1.2em] flex"
             initial="initial"
             animate={isHovered ? "hover" : "initial"}
             exit="exit"
           >
+            {/* Shadow Text */}
             <motion.div
               className="absolute inset-0 flex justify-center items-center"
               variants={letterVariants}
             >
-              {shadowText.split('').map((char, index) => (
+              {!isHovered && shadowText.split('').map((char, index) => (
                 <motion.span
                   key={index}
                   className="inline-block text-muted-foreground/20"
@@ -76,11 +78,20 @@ export function SectionHeader({
                 </motion.span>
               ))}
             </motion.div>
+
+            {/* Title Text */}
             <motion.div
               className="absolute inset-0 flex justify-center items-center"
               variants={titleVariants}
             >
-              <span className="text-foreground">{title}</span>
+              {isHovered && title.split('').map((char, index) => (
+                <motion.span
+                  key={index}
+                  className="inline-block text-foreground"
+                >
+                  {char}
+                </motion.span>
+              ))}
               {highlight && (
                 <span className="text-primary ml-2">{highlight}</span>
               )}
@@ -97,4 +108,3 @@ export function SectionHeader({
     </div>
   )
 }
-
