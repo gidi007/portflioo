@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useSpring } from 'framer-motion';
 import { Download, ExternalLink, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -28,6 +27,7 @@ const fadeInUpVariants = {
 };
 
 const About: React.FC = () => {
+  const [isClient, setIsClient] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
@@ -36,19 +36,29 @@ const About: React.FC = () => {
     restDelta: 0.001,
   });
 
+  // Set isClient to true once component mounts
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const handleDownloadCV = () => {
-    const link = document.createElement('a');
-    link.href = '/FAVOUR_BAWA_RESUME.pdf';
-    link.download = 'FAVOUR_BAWA_RESUME.pdf';
-    link.click();
+    if (typeof window !== 'undefined') {
+      const link = document.createElement('a');
+      link.href = '/FAVOUR_BAWA_RESUME.pdf';
+      link.download = 'FAVOUR_BAWA_RESUME.pdf';
+      link.click();
+    }
   };
+
+  // Don't render anything until we're on the client
+  if (!isClient) {
+    return null;
+  }
 
   return (
     <>
-      {/* Background Animation */}
       <AnimatedBackground />
 
-      {/* Scroll Progress Bar */}
       <motion.div
         className="fixed top-0 left-0 right-0 h-1 bg-primary z-50 origin-left"
         style={{ scaleX }}
@@ -56,7 +66,6 @@ const About: React.FC = () => {
 
       <section className="py-8 md:py-20 min-h-screen">
         <div className="container mx-auto px-4">
-          {/* Section Header */}
           <motion.div
             initial="hidden"
             animate="visible"
@@ -73,7 +82,6 @@ const About: React.FC = () => {
             </motion.div>
           </motion.div>
 
-          {/* Personal Info & Stats */}
           <div className="grid md:grid-cols-2 gap-8 mb-16">
             <motion.div variants={fadeInUpVariants} initial="hidden" animate="visible" custom={0}>
               <Card className="p-6 space-y-6 bg-opacity-80 backdrop-blur-sm">
@@ -166,7 +174,6 @@ const About: React.FC = () => {
             </div>
           </div>
 
-          {/* Skills Section */}
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -181,7 +188,6 @@ const About: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Experience and Education */}
           <div className="grid md:grid-cols-2 gap-8">
             <div>
               <h2 className="text-xl md:text-2xl font-semibold mb-6">EXPERIENCE</h2>
@@ -203,7 +209,6 @@ const About: React.FC = () => {
         </div>
       </section>
 
-      {/* Contact Modal */}
       <ContactModal
         isOpen={isContactOpen}
         onClose={() => setIsContactOpen(false)}
