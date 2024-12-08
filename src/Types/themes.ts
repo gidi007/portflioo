@@ -1,22 +1,12 @@
-export interface HoverColorSet {
-  light: string;
-  dark: string;
-}
-
-export interface ColorSet {
-  DEFAULT: string;
-  light: string;
-  dark: string;
-  lighter?: string;
-  darker?: string;
-  foreground?: string;
-  hover?: HoverColorSet; // Define hover property explicitly
-  muted?: string;
-}
-
 export interface ThemeConfig {
   colors: {
-    primary: ColorSet;
+    primary: ColorSet & {
+      hover: {
+        light: string;
+        dark: string;
+      };
+      muted: string;
+    };
     secondary: ColorSet;
     background: ColorSet & {
       accent: ColorSet;
@@ -24,18 +14,22 @@ export interface ThemeConfig {
     foreground: ColorSet & {
       header: string;
       subheader: string;
+      muted: string;
       accent: string;
       highlight: string;
     };
     border: ColorSet & {
       transparent: string;
     };
-    accent: ColorSet;
+    accent: ColorSet & {
+      hover: string;
+      muted: string;
+    };
     status: {
-      success: ColorSet & { foreground: string };
-      warning: ColorSet & { foreground: string };
-      error: ColorSet & { foreground: string };
-      info: ColorSet & { foreground: string };
+      success: StatusColorSet;
+      warning: StatusColorSet;
+      error: StatusColorSet;
+      info: StatusColorSet;
     };
     code: {
       background: string;
@@ -79,10 +73,19 @@ export interface ThemeConfig {
     md: string;
     lg: string;
     xl: string;
-    "2xl": string;
+    '2xl': string;
   };
   spacing: Record<number | string, string>;
-  blur: Record<string, string>;
+  blur: {
+    none: string;
+    sm: string;
+    DEFAULT: string;
+    md: string;
+    lg: string;
+    xl: string;
+    '2xl': string;
+    '3xl': string;
+  };
   opacity: Record<number | string, string>;
   fonts: {
     heading: string;
@@ -90,23 +93,10 @@ export interface ThemeConfig {
     mono: string;
   };
   fontSizes: Record<string, string>;
-  fontWeights: {
-    normal: string;
-    bold: string;
-  };
-  lineHeights: {
-    normal: string;
-    tight: string;
-  };
-  letterSpacings: {       
-    normal: string;
-    wide: string;
-  };
-  borderRadius: {
-    sm: string;
-    DEFAULT: string;
-    lg: string;
-  };
+  fontWeights: Record<string, string>;
+  lineHeights: Record<string, string>;
+  letterSpacings: Record<string, string>;
+  borderRadius: Record<string, string>;
   zIndex: Record<number | string, string>;
   gradients: {
     primary: string;
@@ -114,3 +104,17 @@ export interface ThemeConfig {
     highlight: string;
   };
 }
+
+interface ColorSet {
+  DEFAULT: string;
+  light: string;
+  lighter?: string;
+  dark: string;
+  darker?: string;
+  foreground?: string;
+}
+
+interface StatusColorSet extends ColorSet {
+  foreground: string;
+}
+

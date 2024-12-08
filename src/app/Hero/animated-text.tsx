@@ -1,50 +1,20 @@
 import React, { useState, useEffect, memo } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 
-// Define animation variants using the correct Framer Motion Variants type
+// Define animation variants
 const textVariants: Variants = {
-  initial: {
-    y: 0,
-    opacity: 1,
-    scale: 1,
-    transition: {
-      duration: 0.4,
-      ease: "easeInOut",
-    },
-  },
-  hover: {
-    y: -5,
-    opacity: 0,
-    scale: 0.95,
-    transition: {
-      duration: 0.4,
-      ease: "easeInOut",
-    },
-  },
+  initial: { y: 20, opacity: 0 },
+  animate: { y: 0, opacity: 1 },
+  exit: { y: -20, opacity: 0 },
 };
 
-const hoverVariants: Variants = {
-  initial: {
-    y: 30,
-    opacity: 0,
-    scale: 0.9,
-    transition: {
-      duration: 0.4,
-      ease: "easeInOut",
-    },
-  },
-  hover: {
-    y: 0,
-    opacity: 1,
-    scale: 1,
-    transition: {
-      duration: 0.4,
-      ease: "easeInOut",
-    },
-  },
+const underlineVariants: Variants = {
+  initial: { scaleX: 0 },
+  animate: { scaleX: 1 },
+  exit: { scaleX: 0 },
 };
 
-// Memoized static text component
+// Memoized gradient text
 const StaticGradientText = memo(() => (
   <span className="bg-gradient-to-r from-indigo-400 via-purple-500 to-pink-500 text-transparent bg-clip-text">
     Favour
@@ -53,71 +23,53 @@ const StaticGradientText = memo(() => (
 
 StaticGradientText.displayName = "StaticGradientText";
 
-// Memoized animated text content
-const AnimatedContent = memo(({ isHovered }: { isHovered: boolean }) => (
-  <AnimatePresence mode="wait" initial={false}>
-    {!isHovered ? (
-      <motion.span
-        className="text-gray-400 dark:text-gray-600"
-        initial="initial"
-        animate="initial"
-        exit="hover"
-        variants={textVariants}
-      >
-        BAWA
-      </motion.span>
-    ) : (
-      <motion.span
-        className="flex items-center gap-2 bg-gradient-to-r from-teal-400 via-blue-500 to-purple-600 text-transparent bg-clip-text"
-        initial="initial"
-        animate="hover"
-        exit="initial"
-        variants={hoverVariants}
-      >
-        <span>&apos;s</span>
-        <span>Portfolio</span>
-      </motion.span>
-    )}
-  </AnimatePresence>
+// Memoized animated text component
+const AnimatedContent = memo(({ text, className }: { text: string; className: string }) => (
+  <motion.span
+    className={className}
+    initial="initial"
+    animate="animate"
+    exit="exit"
+    variants={textVariants}
+    transition={{ duration: 0.5, ease: "easeInOut" }}
+  >
+    {text}
+  </motion.span>
 ));
 
 AnimatedContent.displayName = "AnimatedContent";
 
 export const EnhancedAnimatedText = () => {
-  const [mounted, setMounted] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const texts = [
+    { content: "BAWA", className: "text-gray-400 dark:text-gray-600" },
+    { content: "'s Portfolio", className: "bg-gradient-to-r from-teal-400 via-blue-500 to-purple-600 text-transparent bg-clip-text" },
+  ];
 
   useEffect(() => {
-    // Delay mounting slightly to ensure proper hydration
-    const timer = setTimeout(() => {
-      setMounted(true);
-    }, 10);
-    
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Avoid layout shift during hydration
-  if (!mounted) {
-    return (
-      <h1 className="text-3xl sm:text-4xl lg:text-6xl xl:text-7xl font-bold tracking-tight">
-        <StaticGradientText />
-      </h1>
-    );
-  }
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % texts.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [texts.length]);
 
   return (
     <h1 className="text-3xl sm:text-4xl lg:text-6xl xl:text-7xl font-bold tracking-tight flex items-center gap-4">
       <StaticGradientText />
-      <div
-        className="relative inline-flex items-center cursor-pointer"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <AnimatedContent isHovered={isHovered} />
+      <div className="relative inline-flex items-center">
+        <AnimatePresence mode="wait">
+          <AnimatedContent
+            key={currentIndex}
+            text={texts[currentIndex].content}
+            className={texts[currentIndex].className}
+          />
+        </AnimatePresence>
         <motion.div
           className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-teal-400 via-blue-500 to-purple-600"
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: isHovered ? 1 : 0 }}
+          variants={underlineVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
           transition={{ duration: 0.6, ease: "easeInOut" }}
         />
       </div>
