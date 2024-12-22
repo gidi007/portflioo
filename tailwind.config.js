@@ -1,6 +1,6 @@
 import plugin from 'tailwindcss/plugin';
 import tailwindcssAnimate from 'tailwindcss-animate';
-import { theme } from './src/themes/theme';
+import { theme } from './src/Themes/theme';
 
 /** @type {import('tailwindcss').Config} */
 const tailwindConfig = {
