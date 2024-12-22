@@ -1,162 +1,164 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { motion, AnimatePresence, Variants } from 'framer-motion'
-import { type LucideIcon } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface NavItemProps {
-  href: string
-  icon: LucideIcon
-  label: string
-  'data-page': string
-  isActive: boolean
-  onClick?: () => void
-  index?: number
+  href: string;
+  icon: React.ElementType;
+  label: string;
+  'data-page': string;
+  isActive: boolean;
+  onClick?: () => void;
+  index?: number;
 }
 
-export function NavItem({ 
-  href, 
-  'data-page': dataPage, 
-  icon: Icon, 
-  label, 
-  isActive, 
+export function NavItem({
+  icon: Icon,
+  label,
+  isActive,
   onClick,
   index = 0
 }: NavItemProps) {
-  const [isHovered, setIsHovered] = useState(false)
-  const [isPressed, setIsPressed] = useState(false)
-  const [hasInteracted, setHasInteracted] = useState(false)
+  const [isHovered, setIsHovered] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const [isExpanding, setIsExpanding] = useState(false);
 
   useEffect(() => {
     if (isActive && !hasInteracted) {
-      setHasInteracted(true)
+      setHasInteracted(true);
     }
-  }, [isActive, hasInteracted])
+  }, [isActive, hasInteracted]);
 
-  const handleClick = () => {
-    setIsPressed(true)
-    setTimeout(() => setIsPressed(false), 200)
-    if (onClick) {
-      onClick()
-    }
-  }
+  const handleClick = useCallback(() => {
+    setIsPressed(true);
+    setTimeout(() => setIsPressed(false), 200);
+    onClick?.();
+  }, [onClick]);
+
+  const handleHoverStart = useCallback(() => {
+    setIsHovered(true);
+    setIsExpanding(true);
+    setTimeout(() => setIsExpanding(false), 300);
+  }, []);
 
   const itemVariants: Variants = {
-    initial: { 
-      scale: 0.96, 
+    initial: {
+      scale: 0.96,
       opacity: 0,
       y: 20
     },
-    animate: { 
-      scale: 1, 
+    animate: {
+      scale: 1,
       opacity: 1,
       y: 0,
       transition: {
         type: "spring",
         stiffness: 400,
         damping: 25,
-        delay: index * 0.1
+        delay: index * 0.1,
+        mass: 0.8
       }
     },
-    tap: { 
+    tap: {
       scale: 0.95,
       transition: {
         type: "spring",
-        stiffness: 400,
-        damping: 15
+        stiffness: 500,
+        damping: 15,
+        mass: 0.6
       }
     },
-    hover: { 
+    hover: {
       scale: 1.05,
       transition: {
         type: "spring",
         stiffness: 400,
-        damping: 15
+        damping: 15,
+        mass: 0.8
       }
-    },
-  }
+    }
+  };
 
   const glowVariants: Variants = {
-    initial: { 
-      opacity: 0, 
-      scale: 0.5,
-      filter: "blur(8px)"
+    initial: {
+      opacity: 0,
+      scale: 0.8
     },
-    animate: { 
-      opacity: [0.5, 0.7, 0.5], 
-      scale: [1, 1.2, 1],
-      filter: "blur(4px)",
+    animate: {
+      opacity: [0.3, 0.5, 0.3],
+      scale: [1, 1.1, 1],
+      filter: "blur(8px)",
       transition: {
-        duration: 2,
+        duration: 3,
         repeat: Infinity,
-        repeatType: "reverse",
+        repeatType: "mirror",
         ease: "easeInOut"
       }
     }
-  }
+  };
 
   const labelVariants: Variants = {
-    initial: { 
-      opacity: 0, 
+    initial: {
+      opacity: 0,
       y: 10,
       scale: 0.9
     },
-    animate: { 
-      opacity: 1, 
+    animate: {
+      opacity: 1,
       y: 0,
       scale: 1,
       transition: {
         type: "spring",
-        stiffness: 400,
-        damping: 25
+        stiffness: 500,
+        damping: 30,
+        mass: 0.8
       }
     },
-    exit: { 
-      opacity: 0, 
+    exit: {
+      opacity: 0,
       y: -10,
       scale: 0.9,
       transition: {
-        duration: 0.2
+        duration: 0.2,
+        ease: "easeOut"
       }
     }
-  }
-
-  const rippleVariants: Variants = {
-    initial: {
-      scale: 0,
-      opacity: 0.75,
-    },
-    animate: {
-      scale: 2,
-      opacity: 0,
-      transition: {
-        duration: 0.8,
-        ease: "easeOut"
-      },
-    },
-  }
+  };
 
   const expandVariants: Variants = {
     collapsed: {
       width: "3rem",
       transition: {
         duration: 0.2,
-        ease: "easeInOut"
+        ease: [0.32, 0.72, 0, 1]
       }
     },
     expanded: {
       width: "auto",
       transition: {
         duration: 0.3,
-        ease: "easeOut"
+        ease: [0.32, 0.72, 0, 1]
       }
     }
-  }
+  };
+
+  const iconVariants: Variants = {
+    initial: { scale: 1 },
+    pressed: { 
+      scale: 0.85,
+      transition: {
+        type: "spring",
+        stiffness: 500,
+        damping: 15
+      }
+    }
+  };
 
   return (
     <motion.div
       onClick={handleClick}
-      onHoverStart={() => setIsHovered(true)}
+      onHoverStart={handleHoverStart}
       onHoverEnd={() => setIsHovered(false)}
       className="relative"
       variants={itemVariants}
@@ -167,47 +169,44 @@ export function NavItem({
     >
       {/* Mobile Layout */}
       <div className="lg:hidden touch-manipulation">
-        <motion.div 
+        <motion.div
           className={cn(
-            "flex items-center justify-center w-14 h-14 rounded-full transition-colors duration-300",
-            "active:scale-95 transform relative overflow-hidden",
-            isActive ? "bg-primary text-primary-foreground" : 
-                      "text-muted-foreground hover:text-foreground hover:bg-accent"
+            "flex items-center justify-center w-14 h-14 rounded-full",
+            "transition-colors duration-300 relative",
+            isActive ? "bg-primary text-primary-foreground" :
+            "text-muted-foreground hover:text-foreground hover:bg-accent/50"
           )}
-          whileTap={{ scale: 0.95 }}
-          layout
+          initial={false}
+          animate={isPressed ? "pressed" : "initial"}
+          variants={iconVariants}
         >
-          <Icon className="w-5 h-5 relative z-10" />
-          
+          <motion.div 
+            className="relative z-10"
+            animate={{ 
+              scale: isPressed ? 0.9 : 1,
+              transition: { type: "spring", stiffness: 500, damping: 15 }
+            }}
+          >
+            <Icon className="w-5 h-5" />
+          </motion.div>
+
           <AnimatePresence mode="wait">
             {isActive && (
-              <motion.span 
+              <motion.div
                 layoutId="mobile-active-bg"
-                className="absolute inset-0 bg-primary"
-                initial={{ scale: 0, opacity: 0 }}
+                className="absolute inset-0 bg-primary rounded-full"
+                initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0, opacity: 0 }}
+                exit={{ scale: 0.8, opacity: 0 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
               />
             )}
           </AnimatePresence>
 
           <AnimatePresence>
-            {isPressed && (
-              <motion.span
-                className="absolute inset-0 bg-primary/20"
-                variants={rippleVariants}
-                initial="initial"
-                animate="animate"
-                exit={{ opacity: 0 }}
-              />
-            )}
-          </AnimatePresence>
-
-          <AnimatePresence>
             {isActive && (
-              <motion.span
-                className="absolute inset-0 bg-primary/10 rounded-full"
+              <motion.div
+                className="absolute inset-0 bg-primary/20 rounded-full"
                 variants={glowVariants}
                 initial="initial"
                 animate="animate"
@@ -215,7 +214,7 @@ export function NavItem({
             )}
           </AnimatePresence>
         </motion.div>
-        
+
         <AnimatePresence>
           <motion.span
             variants={labelVariants}
@@ -234,31 +233,34 @@ export function NavItem({
       </div>
 
       {/* Desktop Layout */}
-      <div className="hidden lg:block relative">
+      <div className="hidden lg:block">
         <motion.div
           className={cn(
-            "relative flex items-center justify-center",
-            "h-12 group cursor-pointer",
-            "transition-all duration-300"
+            "relative flex items-center h-12 cursor-pointer",
+            "transition-all duration-300 overflow-hidden"
           )}
-          animate={isHovered ? "expanded" : "collapsed"}
           variants={expandVariants}
+          animate={isHovered ? "expanded" : "collapsed"}
         >
-          <AnimatePresence mode="wait">
-            {isActive && (
-              <motion.div
-                layoutId="desktop-active-bg"
-                className="absolute inset-0 bg-primary rounded-full"
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0, opacity: 0 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              />
-            )}
-          </AnimatePresence>
+                  <AnimatePresence mode="wait">
+          {(isActive || isHovered) && (
+            <motion.div
+              layoutId="desktop-active-bg"
+              className={cn(
+                "absolute inset-0 rounded-full z-10",
+                isActive ? "bg-primary" : "bg-primary"
+              )}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            
+            />
+          )}
+        </AnimatePresence>
 
           <motion.div 
-            className="relative z-10 flex items-center px-3 overflow-hidden"
+            className="relative z-10 flex items-center px-3"
             layout
           >
             <motion.div
@@ -266,16 +268,30 @@ export function NavItem({
                 "flex items-center gap-3",
                 isActive ? "text-primary-foreground" : "text-foreground"
               )}
-              initial={false}
+              animate={{ 
+                x: isExpanding ? 4 : 0,
+                transition: { type: "spring", stiffness: 400, damping: 20 }
+              }}
             >
-              <Icon className="w-5 h-5 flex-shrink-0" />
-              <motion.span 
-                className="font-medium min-w-max"
-                initial={{ opacity: 0, x: -20 }}
+              <motion.div
                 animate={{ 
-                  opacity: isHovered ? 1 : 0, 
-                  x: isHovered ? 0 : -20,
-                  transition: { duration: 0.2, ease: "easeOut" }
+                  rotate: isHovered ? [0, -10, 10, 0] : 0,
+                  transition: { duration: 0.5, ease: "easeInOut" }
+                }}
+              >
+                <Icon className="w-5 h-5 flex-shrink-0" />
+              </motion.div>
+              
+              <motion.span
+                className="font-medium whitespace-nowrap"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ 
+                  opacity: isHovered ? 1 : 0,
+                  x: isHovered ? 0 : -10,
+                  transition: { 
+                    duration: 0.2,
+                    ease: [0.32, 0.72, 0, 1]
+                  }
                 }}
               >
                 {label}
@@ -283,30 +299,17 @@ export function NavItem({
             </motion.div>
           </motion.div>
 
-          <AnimatePresence>
-            {(isHovered || isActive) && (
-              <motion.span
-                className="absolute -right-2 w-2 h-2 rounded-full bg-primary"
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              />
-            )}
-          </AnimatePresence>
-
-          <AnimatePresence>
-            {isActive && (
-              <motion.span
-                className="absolute inset-0 bg-primary/10 rounded-full"
-                variants={glowVariants}
-                initial="initial"
-                animate="animate"
-              />
-            )}
-          </AnimatePresence>
+          {isActive && (
+            <motion.div
+              className="absolute inset-0 bg-primary/10 rounded-full"
+              variants={glowVariants}
+              initial="initial"
+              animate="animate"
+            />
+          )}
         </motion.div>
       </div>
     </motion.div>
-  )
+  );
 }
+

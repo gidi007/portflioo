@@ -3,7 +3,6 @@
 import React from 'react'
 import { ThemeProvider } from '@/context/ThemeContext'
 import { ActiveSectionProvider } from '@/context/ActiveSectionContext'
-import CustomCursor from '@/components/common/CustomCursor'
 import Navbar from '@/components/common/Navbar'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -23,7 +22,7 @@ export default function MainLayout({ children, className }: MainLayoutProps) {
           "transition-all duration-300 ease-in-out", // Smooth transitions
           className
         )}>
-          <CustomCursor />
+    
           <Navbar />
           <AnimatePresence mode="wait">
             <motion.main 
@@ -36,7 +35,7 @@ export default function MainLayout({ children, className }: MainLayoutProps) {
               {children}
             </motion.main>
           </AnimatePresence>
-          <CustomCursor />
+          
         </div>
       </ActiveSectionProvider>
     </ThemeProvider>

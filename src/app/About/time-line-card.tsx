@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 interface TimelineCardProps {
   item: {
@@ -36,9 +37,15 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({ item, direction = 'l
       whileInView="visible"
       viewport={{ once: true, amount: 0.2 }}
     >
-      <Card className="p-6 hover:shadow-lg transition-all duration-300 bg-opacity-80 backdrop-blur-sm relative overflow-hidden group">
+      <Card className={cn(
+        "p-6 transition-all duration-300",
+        "hover:shadow-lg",
+        "bg-card dark:bg-card",
+        "backdrop-blur-sm",
+        "relative overflow-hidden group"
+      )}>
         <motion.div 
-          className="absolute inset-0 bg-primary/10"
+          className="absolute inset-0 bg-primary/10 dark:bg-primary/5"
           initial={{ scaleY: 0 }}
           whileHover={{ scaleY: 1 }}
           transition={{ duration: 0.3 }}
@@ -53,7 +60,7 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({ item, direction = 'l
             {item.date}
           </motion.span>
           <motion.h3 
-            className="text-lg font-semibold mb-1"
+            className="text-lg font-semibold mb-1 text-foreground dark:text-foreground"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
@@ -69,7 +76,7 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({ item, direction = 'l
             {item.organization}
           </motion.p>
           <motion.p 
-            className="text-sm leading-relaxed"
+            className="text-sm leading-relaxed text-foreground dark:text-foreground"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.5 }}

@@ -5,10 +5,12 @@ interface Skill {
   }
   
   interface PersonalInfo {
-    [key: string]: string;
-    email: string;
-    LinkedIn: string;
-  }
+  email: string;
+  linkedIn: string;
+  github: string;
+  X: string;
+  [key: string]: string; // Allow additional string properties
+}
   
   interface Stat {
     value: string;
@@ -45,6 +47,9 @@ export const skills: Skill[] = [
     email: 'favourbawa04@mail.com',
     LinkedIn: 'https://www.linkedin.com/in/favour-bawa-884445173/',
     languages: 'English',
+    linkedIn: "",
+    github: "",
+    X: ""
   };
   
   export const stats: Stat[] = [

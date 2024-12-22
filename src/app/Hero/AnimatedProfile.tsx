@@ -1,12 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
-import React, { useState, useEffect } from 'react';
-import { motion, useAnimation } from 'framer-motion';
+import React, { useState, useCallback } from 'react';
+import { motion, useAnimation, useMotionValue, useTransform } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useInView } from 'react-intersection-observer';
 import Image from 'next/image';
-// Enhanced Animated Profile Component
+
 interface AnimatedProfileProps {
   onClick?: () => void;
   className?: string;
@@ -14,120 +13,203 @@ interface AnimatedProfileProps {
   alt?: string;
 }
 
-export function AnimatedProfile({ 
-  onClick, 
+export function AnimatedProfile({
+  onClick,
   className,
   imageSrc,
   alt = "Profile"
 }: AnimatedProfileProps) {
   const controls = useAnimation();
+  const [isHovered, setIsHovered] = useState(false);
+  const [isTouched, setIsTouched] = useState(false);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const rotateX = useTransform(mouseY, [-300, 300], [5, -5]);
+  const rotateY = useTransform(mouseX, [-300, 300], [-5, 5]);
+
   const [ref, inView] = useInView({
-    threshold: 0.2,
+    threshold: 0.1,
     triggerOnce: true
   });
-  const [isMobile, setIsMobile] = useState(false);
 
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  useEffect(() => {
+  React.useEffect(() => {
     if (inView) {
       controls.start('visible');
     }
   }, [controls, inView]);
 
+  const handleMouseMove = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    mouseX.set(event.clientX - centerX);
+    mouseY.set(event.clientY - centerY);
+  }, [mouseX, mouseY]);
+
+  const handleTouchStart = useCallback(() => {
+    setIsTouched(true);
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    setTimeout(() => setIsTouched(false), 150);
+  }, []);
+
+  const resetMousePosition = useCallback(() => {
+    mouseX.set(0);
+    mouseY.set(0);
+  }, [mouseX, mouseY]);
+
   const profileVariants = {
-    initial: { 
+    hidden: {
       scale: 0.9,
-      opacity: 0
+      opacity: 0,
+      y: 20
     },
     visible: {
       scale: 1,
       opacity: 1,
+      y: 0,
       transition: {
-        duration: 0.6,
-        ease: "easeOut"
+        type: "spring",
+        stiffness: 200,
+        damping: 20,
+        mass: 0.8,
+        duration: 0.8
       }
-    }
-  };
-
-  const borderVariants = {
-    animate: {
-      borderRadius: [
-        "60% 40% 30% 70%/60% 30% 70% 40%",
-        "30% 60% 70% 40%/50% 60% 30% 60%",
-        "60% 40% 30% 70%/60% 30% 70% 40%"
-      ]
     }
   };
 
   return (
     <motion.div
       ref={ref}
-      initial="initial"
+      initial="hidden"
       animate={controls}
       variants={profileVariants}
       className={cn(
-        "relative w-[280px] h-[280px] sm:w-[300px] sm:h-[300px] md:w-[400px] md:h-[400px] lg:w-[500px] lg:h-[500px]",
-        "mx-auto", // Center on mobile
+        "relative w-full h-full",
+        "perspective-1000",
         className
       )}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => {
+        resetMousePosition();
+        setIsHovered(false);
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      style={{
+        transformStyle: "preserve-3d"
+      }}
     >
       <motion.div
-        className="w-full h-full rounded-full overflow-hidden cursor-pointer group"
-        animate="animate"
-        variants={borderVariants}
-        transition={{
-          duration: 8,
-          ease: "easeInOut",
-          repeat: Infinity,
-          repeatDelay: 1
-        }}
+        className="w-full h-full relative"
         style={{
-          border: '4px solid',
-          borderColor: 'rgba(var(--primary-rgb), 0.3)',
-          boxShadow: '0 0 20px rgba(var(--primary-rgb), 0.2)'
+          rotateX,
+          rotateY
         }}
-        onClick={onClick}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-white/30 to-primary/20 dark:from-white/10 dark:to-primary/10 blur-2xl opacity-50 group-hover:opacity-75 transition-all duration-500" />
-        
         <motion.div
-          className="relative w-full h-full"
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.98 }}
-          transition={{
-            type: "spring",
-            stiffness: 300,
-            damping: 20
+          className="absolute -inset-4 bg-amber-500/20 dark:bg-amber-400/20 rounded-[inherit] blur-2xl"
+          animate={{
+            opacity: isHovered || isTouched ? 0.8 : 0.4,
+            scale: isHovered || isTouched ? 1.05 : 1
           }}
+          transition={{ duration: 0.4, type: "spring", stiffness: 200 }}
+        />
+
+        <motion.div
+          className={cn(
+            "w-full h-full relative overflow-hidden cursor-pointer",
+            "transform-gpu backface-hidden rounded-3xl"
+          )}
+          animate={{
+            scale: isHovered || isTouched ? 1.03 : 1,
+            boxShadow: isHovered || isTouched 
+              ? '0 25px 50px rgba(245, 158, 11, 0.3)' 
+              : '0 15px 35px rgba(245, 158, 11, 0.2)'
+          }}
+          transition={{ 
+            duration: 0.4,
+            type: "spring",
+            stiffness: 200
+          }}
+          style={{
+            border: '3px solid',
+            borderColor: 'rgba(245, 158, 11, 0.3)',
+          }}
+          onClick={onClick}
         >
-          <Image
-            src={imageSrc}
-            alt={alt}
-            fill
-            sizes="(max-width: 640px) 280px, (max-width: 768px) 300px, (max-width: 1024px) 400px, 500px"
-            className="object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-110"
-            priority
-          />
-          
           <motion.div
-            className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center"
-            initial={{ opacity: 0 }}
-            whileHover={{ opacity: 1 }}
+            className="absolute inset-0 bg-gradient-to-br from-white/40 to-amber-500/30 dark:from-white/20 dark:to-amber-400/20 opacity-0"
+            animate={{
+              opacity: isHovered || isTouched ? 0.6 : 0
+            }}
+            transition={{
+              duration: 0.3
+            }}
+          />
+
+          <motion.div
+            className="relative w-full h-full transform-gpu"
+            animate={{
+              scale: isHovered || isTouched ? 1.05 : 1
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 200,
+              damping: 20
+            }}
           >
-            <span className="text-white text-lg md:text-xl font-semibold transform translate-y-4 group-hover:translate-y-0 transition-all duration-500">
-              View About Me
-            </span>
+            <div className="relative w-full h-full">
+              <Image
+                src={imageSrc}
+                alt={alt}
+                fill
+                sizes="(max-width: 640px) 320px, (max-width: 768px) 400px, 500px"
+                className={cn(
+                  "object-cover transition-all duration-500",
+                  "transform-gpu backface-hidden"
+                )}
+                priority
+              />
+            </div>
+
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent"
+              initial={{ opacity: 0 }}
+              animate={{ 
+                opacity: isHovered || isTouched ? 1 : 0,
+                y: isHovered || isTouched ? 0 : 10
+              }}
+              transition={{
+                duration: 0.3,
+                ease: "easeOut"
+              }}
+            >
+              <motion.span
+                className={cn(
+                  "absolute left-1/2 bottom-8 -translate-x-1/2",
+                  "text-white text-xl md:text-2xl font-semibold",
+                  "whitespace-nowrap tracking-wide"
+                )}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ 
+                  opacity: isHovered || isTouched ? 1 : 0,
+                  y: isHovered || isTouched ? 0 : 10
+                }}
+                transition={{
+                  duration: 0.3,
+                  delay: 0.1
+                }}
+              >
+                View About Me
+              </motion.span>
+            </motion.div>
           </motion.div>
         </motion.div>
       </motion.div>
     </motion.div>
   );
 }
+

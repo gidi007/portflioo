@@ -1,79 +1,125 @@
+'use client';
+
 import React, { useState, useEffect, memo } from "react";
-import { motion, AnimatePresence, Variants } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
-// Define animation variants
-const textVariants: Variants = {
-  initial: { y: 20, opacity: 0 },
-  animate: { y: 0, opacity: 1 },
-  exit: { y: -20, opacity: 0 },
+const titleVariants = {
+  initial: { 
+    opacity: 0, 
+    y: 20,
+    filter: 'blur(10px)'
+  },
+  animate: { 
+    opacity: 1, 
+    y: 0,
+    filter: 'blur(0px)',
+    transition: { 
+      duration: 0.5,
+      ease: [0.6, -0.05, 0.01, 0.99]
+    } 
+  },
+  exit: { 
+    opacity: 0,
+    y: -20,
+    filter: 'blur(10px)',
+    transition: { 
+      duration: 0.3,
+      ease: [0.6, -0.05, 0.01, 0.99]
+    } 
+  },
 };
 
-const underlineVariants: Variants = {
-  initial: { scaleX: 0 },
-  animate: { scaleX: 1 },
-  exit: { scaleX: 0 },
+const letterVariants = {
+  initial: { opacity: 0, y: 10 },
+  animate: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      delay: i * 0.02,
+      ease: [0.6, -0.05, 0.01, 0.99]
+    }
+  })
 };
 
-// Memoized gradient text
-const StaticGradientText = memo(() => (
-  <span className="bg-gradient-to-r from-indigo-400 via-purple-500 to-pink-500 text-transparent bg-clip-text">
-    Favour
-  </span>
-));
+type AnimatedTitleProps = {
+  text: string;
+  className?: string;
+};
 
-StaticGradientText.displayName = "StaticGradientText";
-
-// Memoized animated text component
-const AnimatedContent = memo(({ text, className }: { text: string; className: string }) => (
-  <motion.span
-    className={className}
+const AnimatedTitle = memo(({ text, className = "" }: AnimatedTitleProps) => (
+  <motion.div
+    className={`${className} overflow-hidden whitespace-nowrap`}
+    variants={titleVariants}
     initial="initial"
     animate="animate"
     exit="exit"
-    variants={textVariants}
-    transition={{ duration: 0.5, ease: "easeInOut" }}
   >
-    {text}
-  </motion.span>
+    {text.split("").map((char, index) => (
+      <motion.span
+        key={index}
+        custom={index}
+        variants={letterVariants}
+        initial="initial"
+        animate="animate"
+        className="inline-block"
+        style={{
+          marginLeft: char === " " ? "0.2em" : "0.02em",
+          marginRight: char === " " ? "0.2em" : "0.02em"
+        }}
+      >
+        {char}
+      </motion.span>
+    ))}
+  </motion.div>
 ));
 
-AnimatedContent.displayName = "AnimatedContent";
+AnimatedTitle.displayName = "AnimatedTitle";
 
-export const EnhancedAnimatedText = () => {
+const EnhancedAnimatedText = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const texts = [
-    { content: "BAWA", className: "text-gray-400 dark:text-gray-600" },
-    { content: "'s Portfolio", className: "bg-gradient-to-r from-teal-400 via-blue-500 to-purple-600 text-transparent bg-clip-text" },
+
+  const titles = [
+    {
+      content: "Creative Technologist",
+      className: "bg-gradient-to-r from-primary via-primary/90 to-secondary bg-clip-text text-transparent"
+    },
+    {
+      content: "Frontend Architect",
+      className: "bg-gradient-to-r from-primary via-primary/90 to-secondary bg-clip-text text-transparent"
+    },
+    {
+      content: "UI/UX Engineer",
+      className: "bg-gradient-to-r from-primary via-primary/90 to-secondary bg-clip-text text-transparent"
+    },
+    {
+      content: "Full Stack Developer",
+      className: "bg-gradient-to-r from-primary via-primary/90 to-secondary bg-clip-text text-transparent"
+    }
   ];
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % texts.length);
+      setCurrentIndex((prev) => (prev + 1) % titles.length);
     }, 3000);
+
     return () => clearInterval(interval);
-  }, [texts.length]);
+  }, [titles.length]);
 
   return (
-    <h1 className="text-3xl sm:text-4xl lg:text-6xl xl:text-7xl font-bold tracking-tight flex items-center gap-4">
-      <StaticGradientText />
-      <div className="relative inline-flex items-center">
-        <AnimatePresence mode="wait">
-          <AnimatedContent
-            key={currentIndex}
-            text={texts[currentIndex].content}
-            className={texts[currentIndex].className}
-          />
-        </AnimatePresence>
-        <motion.div
-          className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-teal-400 via-blue-500 to-purple-600"
-          variants={underlineVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          transition={{ duration: 0.6, ease: "easeInOut" }}
-        />
+    <div className="w-full">
+      <div className="relative flex flex-col items-center lg:items-start">
+        <div className="relative h-[40px] sm:h-[48px] lg:h-[56px] overflow-hidden w-full">
+          <AnimatePresence mode="wait">
+            <AnimatedTitle
+              key={currentIndex}
+              text={titles[currentIndex].content}
+              className={`${titles[currentIndex].className} text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight absolute left-0 right-0 text-center lg:text-left`}
+            />
+          </AnimatePresence>
+        </div>
       </div>
-    </h1>
+    </div>
   );
 };
 

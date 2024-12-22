@@ -1,110 +1,159 @@
-'use client'
+import React, { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-import React, { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '@/lib/utils'
 
-interface SectionHeaderProps {
-  title: string
-  highlight?: string
-  shadowText: string
-  className?: string
+interface AnimatedHeaderProps {
+  title: string;
+  shadowText: string;
+  highlight?: string;
+  interval?: number;
+  className?: string;
 }
 
-export function SectionHeader({
+export const SectionHeader = ({
   title,
-  highlight,
   shadowText,
-  className
-}: SectionHeaderProps) {
-  const [isHovered, setIsHovered] = useState(false)
+  highlight,
+  interval = 3000,
+  className = '',
+}: AnimatedHeaderProps) => {
+  const [isActive, setIsActive] = useState(false);
+  const isMobile = useMediaQuery('(max-width: 768px)');
+  const [autoplay, setAutoplay] = useState(!isMobile);
 
-  const letterVariants = {
-    initial: { y: 0, opacity: 1 },
-    hover: {
-      y: -30,
-      opacity: 0,
-      transition: { duration: 0.3, ease: "easeInOut" }
-    },
-    exit: {
-      y: 30,
-      opacity: 0,
-      transition: { duration: 0.3, ease: "easeInOut" }
+  useEffect(() => {
+    setAutoplay(!isMobile);
+  }, [isMobile]);
+
+  useEffect(() => {
+    if (!autoplay) return;
+
+    const timer = setInterval(() => {
+      setIsActive((prev) => !prev);
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, [interval, autoplay]);
+
+  const handleInteraction = useCallback(() => {
+    if (isMobile) {
+      setIsActive((prev) => !prev);
     }
-  }
+  }, [isMobile]);
 
-  const titleVariants = {
-    initial: { y: 30, opacity: 0 },
-    hover: {
+  const handleMouseEnter = useCallback(() => {
+    if (!isMobile) {
+      setAutoplay(false);
+      setIsActive(true);
+    }
+  }, [isMobile]);
+
+  const handleMouseLeave = useCallback(() => {
+    if (!isMobile) {
+      setAutoplay(true);
+      setIsActive(false);
+    }
+  }, [isMobile]);
+
+  const variants = {
+    hidden: {
+      y: 20,
+      opacity: 0,
+      transition: { duration: 0.3, ease: 'easeInOut' }
+    },
+    visible: {
       y: 0,
       opacity: 1,
-      transition: { duration: 0.3, ease: "easeInOut", delay: 0.1 }
+      transition: { duration: 0.3, ease: 'easeInOut' }
     },
     exit: {
-      y: -30,
+      y: -20,
       opacity: 0,
-      transition: { duration: 0.3, ease: "easeInOut" }
+      transition: { duration: 0.3, ease: 'easeInOut' }
     }
-  }
+  };
 
   return (
     <div
-      className={cn("relative text-center mb-12 overflow-hidden cursor-pointer", className)}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className={`relative select-none ${className}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onClick={handleInteraction}
+      role="button"
+      tabIndex={0}
+      onKeyPress={(e) => e.key === 'Enter' && handleInteraction()}
     >
-      <div className="flex justify-center items-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight relative">
+      <div className="relative h-24 md:h-32 flex items-center justify-center overflow-hidden">
         <AnimatePresence mode="wait">
-          {/* Alternating between shadow and title text */}
           <motion.div
-            key={isHovered ? "shadow" : "title"}  
-            className="relative h-[1.2em] flex"
-            initial="initial"
-            animate={isHovered ? "hover" : "initial"}
+            key={isActive ? 'title' : 'shadow'}
+            className="absolute inset-0 flex items-center justify-center"
+            variants={variants}
+            initial="hidden"
+            animate="visible"
             exit="exit"
           >
-            {/* Shadow Text */}
-            <motion.div
-              className="absolute inset-0 flex justify-center items-center"
-              variants={letterVariants}
+            <h2 className={`text-3xl md:text-5xl font-bold tracking-tight
+              ${isActive ? 'text-foreground' : 'text-muted-foreground/20'}`}
             >
-              {!isHovered && shadowText.split('').map((char, index) => (
+              {(isActive ? title : shadowText).split('').map((char, i) => (
                 <motion.span
-                  key={index}
-                  className="inline-block text-muted-foreground/20"
-                  style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.1)' }}
+                  key={`${char}-${i}`}
+                  className="inline-block"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.03 }}
                 >
                   {char}
                 </motion.span>
               ))}
-            </motion.div>
-
-            {/* Title Text */}
-            <motion.div
-              className="absolute inset-0 flex justify-center items-center"
-              variants={titleVariants}
-            >
-              {isHovered && title.split('').map((char, index) => (
+              {isActive && highlight && (
                 <motion.span
-                  key={index}
-                  className="inline-block text-foreground"
+                  className="text-primary ml-2"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
                 >
-                  {char}
+                  {highlight}
                 </motion.span>
-              ))}
-              {highlight && (
-                <span className="text-primary ml-2">{highlight}</span>
               )}
-            </motion.div>
+            </h2>
           </motion.div>
         </AnimatePresence>
       </div>
+
       <motion.div
-        className="mt-2 h-1 bg-gradient-to-r from-primary/0 via-primary to-primary/0"
+        className="h-1 bg-gradient-to-r from-primary/0 via-primary to-primary/0 mt-2"
         initial={{ scaleX: 0 }}
-        animate={{ scaleX: isHovered ? 1 : 0 }}
-        transition={{ duration: 0.5 }}
+        animate={{ scaleX: isActive ? 1 : 0 }}
+        transition={{ duration: 0.4 }}
       />
+
+      {isMobile && (
+        <div className="mt-2 text-center text-sm text-muted-foreground">
+        </div>
+      )}
     </div>
-  )
-}
+  );
+};
+
+// Custom hook for media queries
+const useMediaQuery = (query: string): boolean => {
+  const [matches, setMatches] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia(query);
+    if (media.matches !== matches) {
+      setMatches(media.matches);
+    }
+
+    const listener = () => setMatches(media.matches);
+    media.addEventListener('change', listener);
+    
+    return () => media.removeEventListener('change', listener);
+  }, [matches, query]);
+
+  return matches;
+};
+
+export default SectionHeader;

@@ -1,13 +1,12 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-'use client'
+'use client';
 
-import { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Home, User, Briefcase, Edit, Send, Moon, Sun, Menu, X, ChevronUp } from 'lucide-react'
-import { useTheme } from '@/context/ThemeContext'
-import { useActiveSection } from '@/context/ActiveSectionContext'
-import { NavItem } from './NavItem'
-import { cn } from '@/lib/utils'
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { motion, AnimatePresence, useMotionValueEvent, useScroll } from 'framer-motion';
+import { Home, User, Briefcase, Edit, Send, Moon, Sun, Menu, X, ChevronUp } from 'lucide-react';
+import { useTheme } from '@/context/ThemeContext';
+import { useActiveSection } from '@/context/ActiveSectionContext';
+import { NavItem } from './NavItem';
+import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '#hero', 'data-page': 'hero', icon: Home, label: 'HOME' },
@@ -15,120 +14,230 @@ const navItems = [
   { href: '#portfolio', 'data-page': 'portfolio', icon: Briefcase, label: 'WORK' },
   { href: '#blog', 'data-page': 'blog', icon: Edit, label: 'BLOG' },
   { href: '#contact', 'data-page': 'contact', icon: Send, label: 'CONTACT' },
-]
+];
 
 export default function Navbar() {
-  const { theme, setTheme } = useTheme()
-  const { activeSection, setActiveSection } = useActiveSection()
-  const [isScrollingDown, setIsScrollingDown] = useState(false)
-  const [lastScrollY, setLastScrollY] = useState(0)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [showScrollToTop, setShowScrollToTop] = useState(false)
-  const [isNavVisible, setIsNavVisible] = useState(true)
+  const { theme, setTheme } = useTheme();
+  const { activeSection, setActiveSection } = useActiveSection();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isNavVisible, setIsNavVisible] = useState(true);
+  const lastScrollY = useRef(0);
+  const { scrollY } = useScroll();
 
-  // Scroll handler optimized
-  const handleScroll = useCallback(() => {
-    const currentScrollY = window.scrollY
-    const scrollDelta = currentScrollY - lastScrollY
-    
-    if (Math.abs(scrollDelta) > 10) {
-      setIsScrollingDown(scrollDelta > 0)
-      setLastScrollY(currentScrollY)
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const scrollDelta = latest - lastScrollY.current;
+    const threshold = 5;
+
+    if (Math.abs(scrollDelta) > threshold) {
+      setIsNavVisible(
+        scrollDelta < 0 || 
+        latest < threshold || 
+        isMobileMenuOpen
+      );
+      lastScrollY.current = latest;
     }
-
-    setShowScrollToTop(currentScrollY > window.innerHeight)
-
-    // Hide nav when scrolling down, show when scrolling up or at top
-    if (scrollDelta > 10) {
-      setIsNavVisible(false)
-    } else if (scrollDelta < -10 || currentScrollY === 0) {
-      setIsNavVisible(true)
-    }
-  }, [lastScrollY])
+  });
 
   useEffect(() => {
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [handleScroll])
+    const handleResize = () => setIsMobileMenuOpen(false);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
-  const handleNavClick = (dataPage: string) => {
-    setActiveSection(dataPage)
-    setIsMobileMenuOpen(false)
-  }
+  const handleNavClick = useCallback((dataPage: string) => {
+    setActiveSection(dataPage);
+    setIsMobileMenuOpen(false);
+  }, [setActiveSection]);
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
-  const navContainerVariants = {
-    hidden: { opacity: 0, y: 100 },
-    visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 20, staggerChildren: 0.1 } },
-    exit: { opacity: 0, y: 100, transition: { duration: 0.3 } }
-  }
+  const containerVariants = {
+    hidden: { 
+      opacity: 0,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 30
+      }
+    },
+    visible: { 
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 30,
+        staggerChildren: 0.1
+      }
+    }
+  };
 
   const mobileMenuVariants = {
-    closed: { opacity: 0, scale: 0.95, transition: { duration: 0.2 } },
-    open: { opacity: 1, scale: 1, transition: { duration: 0.2 } }
-  }
+    closed: {
+      opacity: 0,
+      x: "100%",
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 30
+      }
+    },
+    open: {
+      opacity: 1,
+      x: "0%",
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 30,
+        staggerChildren: 0.1
+      }
+    }
+  };
 
   return (
     <>
-      {/* Theme Toggle and Mobile Menu Toggle */}
-      <motion.div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+      {/* Theme Toggle & Mobile Menu Button */}
+      <motion.div
+        className="fixed top-6 right-6 z-50 flex items-center gap-4"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          type: "spring",
+          stiffness: 300,
+          damping: 30
+        }}
+      >
         <motion.button
           className={cn(
-            "w-12 h-12 rounded-full bg-background/80 backdrop-blur-sm border border-border flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300"
+            "w-14 h-14 rounded-full",
+            "bg-background/80 dark:bg-background/20",
+            "backdrop-blur-sm border border-border",
+            "flex items-center justify-center",
+            "shadow-lg hover:shadow-xl",
+            "transition-all duration-300"
           )}
-          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
         >
-          <AnimatePresence>
+          <AnimatePresence mode="wait">
             <motion.div
               key={theme}
-              initial={{ rotate: -180, opacity: 0 }}
+              initial={{ rotate: -90, opacity: 0 }}
               animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: 180, opacity: 0 }}
-              transition={{ duration: 0.3 }}
+              exit={{ rotate: 90, opacity: 0 }}
+              transition={{
+                type: "spring",
+                stiffness: 300,
+                damping: 30
+              }}
             >
-              {theme === 'dark' ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
+              {theme === 'dark' ? (
+                <Sun className="w-7 h-7 text-primary" />
+              ) : (
+                <Moon className="w-7 h-7 text-primary" />
+              )}
             </motion.div>
           </AnimatePresence>
         </motion.button>
 
         <motion.button
-          className="lg:hidden w-12 h-12 rounded-full bg-background/80 backdrop-blur-sm border border-border flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className={cn(
+            "lg:hidden w-14 h-14 rounded-full",
+            "bg-background/80 dark:bg-background/20",
+            "backdrop-blur-sm border border-border",
+            "flex items-center justify-center",
+            "shadow-lg hover:shadow-xl",
+            "transition-all duration-300"
+          )}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
-          <AnimatePresence>
+          <AnimatePresence mode="wait">
             <motion.div
-              key={isMobileMenuOpen ? 'close' : 'open'}
-              initial={{ rotate: -180, opacity: 0 }}
+              key={isMobileMenuOpen ? 'close' : 'menu'}
+              initial={{ rotate: -90, opacity: 0 }}
               animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: 180, opacity: 0 }}
-              transition={{ duration: 0.3 }}
+              exit={{ rotate: 90, opacity: 0 }}
+              transition={{
+                type: "spring",
+                stiffness: 300,
+                damping: 30
+              }}
             >
-              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isMobileMenuOpen ? (
+                <X className="w-7 h-7 text-primary" />
+              ) : (
+                <Menu className="w-7 h-7 text-primary" />
+              )}
             </motion.div>
           </AnimatePresence>
         </motion.button>
       </motion.div>
 
-      {/* Mobile Navigation */}
+      {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            className="lg:hidden fixed inset-0 z-40 bg-background/80 backdrop-blur-sm"
+            className={cn(
+              "lg:hidden fixed inset-y-0 right-0 z-40 w-64",
+              "bg-background/95 dark:bg-background/95",
+              "backdrop-blur-md border-l border-border"
+            )}
             initial="closed"
             animate="open"
             exit="closed"
             variants={mobileMenuVariants}
           >
-            <div className="flex flex-col items-center justify-center h-full gap-6">
+            <motion.div 
+              className="flex flex-col items-start justify-center h-full gap-8 px-8"
+              variants={containerVariants}
+            >
               {navItems.map((item, index) => (
-                <NavItem 
+                <motion.div
+                  key={item.href}
+                  className="w-full"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <button
+                    className={cn(
+                      "w-full text-left py-4 px-6 rounded-lg",
+                      "transition-colors duration-200",
+                      activeSection === item['data-page']
+                        ? "bg-primary text-primary-foreground"
+                        : "text-foreground hover:bg-accent"
+                    )}
+                    onClick={() => handleNavClick(item['data-page'])}
+                  >
+                    <span className="flex items-center">
+                      <item.icon className="w-6 h-6 mr-4" />
+                      {item.label}
+                    </span>
+                  </button>
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Desktop Navigation */}
+      <AnimatePresence>
+        {isNavVisible && (
+          <motion.div
+            className="hidden lg:block fixed top-1/2 right-10 z-40 -translate-y-1/2"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+          >
+            <nav className="flex flex-col items-end space-y-6">
+              {navItems.map((item, index) => (
+                <NavItem
                   key={item.href}
                   {...item}
                   index={index}
@@ -136,61 +245,36 @@ export default function Navbar() {
                   onClick={() => handleNavClick(item['data-page'])}
                 />
               ))}
-            </div>
+            </nav>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Mobile Bottom Navigation */}
-      <motion.div className="lg:hidden" variants={navContainerVariants} initial="hidden" animate={isNavVisible ? "visible" : "hidden"}>
-        <motion.nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-t border-border transition-transform duration-300">
-          <div className="flex justify-around items-center h-16 px-4">
-            {navItems.map((item, index) => (
-              <NavItem 
-                key={item.href}
-                {...item}
-                index={index}
-                isActive={activeSection === item['data-page']}
-                onClick={() => handleNavClick(item['data-page'])}
-              />
-            ))}
-          </div>
-        </motion.nav>
-      </motion.div>
-
-      {/* Desktop Navigation */}
-      <motion.div className="hidden lg:block" variants={navContainerVariants} initial="hidden" animate={isNavVisible ? "visible" : "hidden"}>
-        <motion.nav className="fixed right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col items-end space-y-4">
-          {navItems.map((item, index) => (
-            <NavItem 
-              key={item.href}
-              {...item}
-              index={index}
-              isActive={activeSection === item['data-page']}
-              onClick={() => handleNavClick(item['data-page'])}
-            />
-          ))}
-        </motion.nav>
-      </motion.div>
-
       {/* Scroll to Top Button */}
       <AnimatePresence>
-        {showScrollToTop && (
+        {!isNavVisible && scrollY.get() > window.innerHeight && (
           <motion.button
             className={cn(
-              "fixed bottom-20 right-4 z-50 w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 lg:bottom-8"
+              "fixed bottom-24 right-6 z-50",
+              "w-14 h-14 rounded-full",
+              "bg-primary text-primary-foreground",
+              "shadow-lg hover:shadow-xl",
+              "flex items-center justify-center",
+              "transition-all duration-300",
+              "lg:bottom-10"
             )}
             onClick={scrollToTop}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <ChevronUp className="w-6 h-6" />
+            <ChevronUp className="w-7 h-7" />
           </motion.button>
         )}
       </AnimatePresence>
     </>
-  )
+  );
 }
+

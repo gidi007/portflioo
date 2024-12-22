@@ -27,9 +27,9 @@ export const SocialLinks: React.FC = () => {
       className="flex flex-wrap gap-4 justify-center lg:justify-start mt-8"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.8 }}
+      transition={{ delay: 0.8, duration: 0.6 }}
     >
-      {socialLinks.map(({ Icon, href, color, hoverColor, iconColor, name }) => (
+      {socialLinks.map(({ Icon, href, color, hoverColor, iconColor, name }, index) => (
         <motion.a 
           key={href}
           href={href}
@@ -49,6 +49,9 @@ export const SocialLinks: React.FC = () => {
           }}
           whileTap={{ scale: 0.95 }}
           aria-label={name}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 + index * 0.1, duration: 0.6 }}
         >
           <motion.div 
             className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
