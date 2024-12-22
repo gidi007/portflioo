@@ -1,3 +1,4 @@
+'use client' 
 import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useSpring } from 'framer-motion';
 import { Download, ExternalLink, Sparkles } from 'lucide-react';

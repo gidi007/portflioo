@@ -1,79 +1,68 @@
 export const theme = {
   colors: {
     primary: {
-      DEFAULT: 'rgb(255, 215, 0)',
-      light: 'rgb(255, 235, 60)',
-      dark: 'rgb(204, 172, 0)',
-      100: 'rgb(255, 248, 204)',
-      200: 'rgb(255, 240, 153)',
-      300: 'rgb(255, 233, 102)',
-      400: 'rgb(255, 225, 51)',
-      500: 'rgb(255, 215, 0)',
-      600: 'rgb(230, 194, 0)',
-      700: 'rgb(204, 172, 0)',
-      800: 'rgb(179, 151, 0)',
-      900: 'rgb(153, 129, 0)',
+      DEFAULT: '#FFA500', // Amber
+      50: '#FFF8E6',
+      100: '#FFE5B2',
+      200: '#FFD280',
+      300: '#FFBF4D',
+      400: '#FFAC1A',
+      500: '#FFA500', // Main amber
+      600: '#CC8400',
+      700: '#996300',
+      800: '#664200',
+      900: '#332100',
     },
     secondary: {
-      DEFAULT: 'rgb(25, 33, 52)',
-      light: 'rgb(40, 51, 69)',
-      dark: 'rgb(18, 25, 40)',
-      100: 'rgb(235, 238, 245)',
-      200: 'rgb(197, 205, 224)',
-      300: 'rgb(159, 172, 203)',
-      400: 'rgb(121, 139, 182)',
-      500: 'rgb(83, 106, 161)',
-      600: 'rgb(61, 81, 131)',
-      700: 'rgb(46, 61, 98)',
-      800: 'rgb(31, 41, 65)',
-      900: 'rgb(25, 33, 52)',
-    },
-    background: {
-      DEFAULT: 'rgb(10, 25, 41)',
-      light: 'rgb(25, 33, 52)',
-      dark: 'rgb(5, 15, 30)',
-      100: 'rgb(242, 244, 247)',
-      200: 'rgb(203, 213, 225)',
-      300: 'rgb(156, 175, 195)',
-      400: 'rgb(109, 136, 165)',
-      500: 'rgb(71, 97, 127)',
-      600: 'rgb(45, 66, 91)',
-      700: 'rgb(27, 42, 61)',
-      800: 'rgb(15, 27, 44)',
-      900: 'rgb(10, 25, 41)',
-    },
-    foreground: {
-      DEFAULT: 'rgb(255, 255, 255)',
-      muted: 'rgba(255, 255, 255, 0.7)',
-      accent: 'rgb(74, 222, 128)',
-    },
-    border: {
-      DEFAULT: 'rgb(255, 215, 0)',
-      light: 'rgba(255, 215, 0, 0.5)',
+      DEFAULT: '#FFD700', // Gold
+      50: '#FFFBE6',
+      100: '#FFF7CC',
+      200: '#FFF0B3',
+      300: '#FFE999',
+      400: '#FFE180',
+      500: '#FFD700',
+      600: '#CCAC00',
+      700: '#998100',
+      800: '#665600',
+      900: '#332B00',
     },
     accent: {
-      DEFAULT: 'rgb(255, 215, 0)',
-      muted: 'rgba(255, 215, 0, 0.5)',
+      DEFAULT: '#FF6B00', // Bright Orange
+      50: '#FFF0E6',
+      100: '#FFD1B2',
+      200: '#FFB280',
+      300: '#FF934D',
+      400: '#FF741A',
+      500: '#FF6B00',
+      600: '#CC5500',
+      700: '#994000',
+      800: '#662B00',
+      900: '#331500',
     },
-    status: {
-      success: 'rgb(34, 197, 94)',
-      warning: 'rgb(234, 179, 8)',
-      error: 'rgb(239, 68, 68)',
-      info: 'rgb(59, 130, 246)',
+    background: {
+      DEFAULT: '#FFFFFF', // White for light mode
+      dark: '#121212', // Rich black for dark mode
     },
-    code: {
-      background: 'rgb(10, 25, 41)',
-      text: 'rgb(255, 255, 255)',
-      keyword: 'rgb(234, 179, 8)',
-      string: 'rgb(34, 197, 94)',
-      number: 'rgb(59, 130, 246)',
-      comment: 'rgb(148, 163, 184)',
+    foreground: {
+      DEFAULT: '#1A1A1A', // Near black for light mode
+      dark: '#E0E0E0', // Light gray for dark mode
+    },
+    muted: {
+      DEFAULT: '#666666',
+      dark: '#A0A0A0',
+    },
+    border: {
+      DEFAULT: '#E5E5E5',
+      dark: '#2A2A2A',
+    },
+    icon: {
+      DEFAULT: '#1A1A1A',
+      dark: '#E0E0E0',
     },
   },
   fonts: {
-    heading: 'Poppins, sans-serif',
-    body: 'Roboto, sans-serif',
-    mono: 'Fira Code, monospace',
+    sans: ['Poppins', 'sans-serif'],
+    serif: ['Merriweather', 'serif'],
   },
   fontSizes: {
     xs: '0.75rem',
@@ -85,8 +74,10 @@ export const theme = {
     '3xl': '1.875rem',
     '4xl': '2.25rem',
     '5xl': '3rem',
+    '6xl': '4rem',
   },
   fontWeights: {
+    light: 300,
     normal: 400,
     medium: 500,
     semibold: 600,
@@ -106,9 +97,6 @@ export const theme = {
     md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
     xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-    '2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-    inner: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
-    glow: '0 0 15px rgba(255, 215, 0, 0.5)',
   },
   spacing: {
     px: '1px',
@@ -127,7 +115,6 @@ export const theme = {
     8: '2rem',
     9: '2.25rem',
     10: '2.5rem',
-    11: '2.75rem',
     12: '3rem',
     14: '3.5rem',
     16: '4rem',
@@ -158,19 +145,13 @@ export const theme = {
     '3xl': '1.5rem',
     full: '9999px',
   },
-  transitions: {
-    DEFAULT: '250ms cubic-bezier(0.4, 0, 0.2, 1)',
-    fast: '150ms cubic-bezier(0.4, 0, 0.2, 1)',
-    slow: '350ms cubic-bezier(0.4, 0, 0.2, 1)',
-    bounce: '500ms cubic-bezier(0.68, -0.55, 0.265, 1.55)',
-  },
   gradients: {
-    primary: 'linear-gradient(135deg, rgb(255, 215, 0) 0%, rgb(255, 165, 0) 100%)',
-    secondary: 'linear-gradient(135deg, rgb(25, 33, 52) 0%, rgb(40, 51, 69) 100%)',
-    accent: 'linear-gradient(135deg, rgb(74, 222, 128) 0%, rgb(59, 130, 246) 100%)',
-    background: 'linear-gradient(135deg, rgb(10, 25, 41) 0%, rgb(25, 33, 52) 100%)',
+    'gradient-1': 'linear-gradient(45deg, var(--tw-gradient-stops))',
+    'gradient-2': 'linear-gradient(90deg, var(--tw-gradient-stops))',
+    'amber': 'linear-gradient(135deg, #FFA500 0%, #FF6B00 100%)',
   },
   blur: {
+    0: '0',
     none: '0',
     sm: '4px',
     DEFAULT: '8px',
@@ -181,6 +162,4 @@ export const theme = {
     '3xl': '64px',
   },
 };
-
-export default theme;
 
