@@ -32,7 +32,7 @@ export const blogPosts: BlogPost[] = [
     image: '/images/blog/blog3.png', // Fixed capitalization
     readTime: '3 min read',
     date: 'Nov 8, 2024',
-    tags: ['AI', 'Productivity', 'Hacks'],
+    tags: ['AI', 'Productivity'],
     mediumUrl: 'https://medium.com/@bawgideo/10-ai-productivity-hacks-to-skyrocket-your-efficiency-in-the-new-year-29900fbe024d',
   },
   {

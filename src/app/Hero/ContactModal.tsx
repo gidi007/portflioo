@@ -1,93 +1,95 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-'use client';
+"use client"
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Send, MapPin, Mail, Phone, Facebook, Twitter, Youtube, Dribbble, CheckCircle2, AlertTriangle } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import React, { useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Send, MapPin, Mail, Phone, Facebook, Twitter, Youtube, Dribbble, CheckCircle2, AlertTriangle } from 'lucide-react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 type FormData = {
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
+  name: string
+  email: string
+  subject: string
+  message: string
 }
 
-type SubmissionStatus = 'idle' | 'submitting' | 'success' | 'error';
+type SubmissionStatus = "idle" | "submitting" | "success" | "error"
 
 const socialLinks = [
-  { icon: Facebook, href: '#', label: 'Facebook', color: 'text-blue-600 dark:text-blue-400' },
-  { icon: Twitter, href: '#', label: 'Twitter', color: 'text-sky-500 dark:text-sky-400' },
-  { icon: Youtube, href: '#', label: 'Youtube', color: 'text-red-600 dark:text-red-400' },
-  { icon: Dribbble, href: '#', label: 'Dribbble', color: 'text-pink-500 dark:text-pink-400' },
-];
+  { icon: Facebook, href: "#", label: "Facebook", color: "text-blue-600 dark:text-blue-400" },
+  { icon: Twitter, href: "#", label: "Twitter", color: "text-sky-500 dark:text-sky-400" },
+  { icon: Youtube, href: "#", label: "Youtube", color: "text-red-600 dark:text-red-400" },
+  { icon: Dribbble, href: "#", label: "Dribbble", color: "text-pink-500 dark:text-pink-400" },
+]
+
 interface EnhancedContactModalProps {
-  className?: string;
+  className?: string
 }
+
 const contactInfo = [
   {
     icon: MapPin,
-    title: 'ADDRESS',
-    content: '123 Street Ohio, OH 750065, United States',
-    color: 'text-green-600 dark:text-green-400'
+    title: "ADDRESS",
+    content: "123 Street Ohio, OH 750065, United States",
+    color: "text-green-600 dark:text-green-400"
   },
   {
     icon: Mail,
-    title: 'EMAIL',
-    content: 'contact@example.com',
-    color: 'text-blue-600 dark:text-blue-400'
+    title: "EMAIL",
+    content: "contact@example.com",
+    color: "text-blue-600 dark:text-blue-400"
   },
   {
     icon: Phone,
-    title: 'PHONE',
-    content: '+1 (555) 123-4567',
-    color: 'text-purple-600 dark:text-purple-400'
+    title: "PHONE",
+    content: "+1 (555) 123-4567",
+    color: "text-purple-600 dark:text-purple-400"
   },
-];
+]
 
 export function EnhancedContactModal({ className }: EnhancedContactModalProps) {
   const [formData, setFormData] = useState<FormData>({
-    name: '',
-    email: '',
-    subject: '',
-    message: '',
-  });
-  const [submissionStatus, setSubmissionStatus] = useState<SubmissionStatus>('idle');
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  })
+  const [submissionStatus, setSubmissionStatus] = useState<SubmissionStatus>("idle")
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     setFormData(prevData => ({
       ...prevData,
       [name]: value
-    }));
-  };
+    }))
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setSubmissionStatus('submitting');
+    e.preventDefault()
+    setSubmissionStatus("submitting")
     
     try {
       // Simulate form submission
       await new Promise<void>((resolve, reject) => {
         setTimeout(() => {
-          Math.random() > 0.5 ? resolve() : reject(new Error('Random submission error'))
+          Math.random() > 0.5 ? resolve() : reject(new Error("Random submission error"))
         }, 1500)
-      });
+      })
       
-      setSubmissionStatus('success');
+      setSubmissionStatus("success")
       
       setTimeout(() => {
-        setFormData({ name: '', email: '', subject: '', message: '' });
-        setSubmissionStatus('idle');
-      }, 2000);
+        setFormData({ name: "", email: "", subject: "", message: "" })
+        setSubmissionStatus("idle")
+      }, 2000)
     } catch (error) {
-      console.error('Submission error:', error);
-      setSubmissionStatus('error');
-      setTimeout(() => setSubmissionStatus('idle'), 2000);
+      console.error("Submission error:", error)
+      setSubmissionStatus("error")
+      setTimeout(() => setSubmissionStatus("idle"), 2000)
     }
-  };
+  }
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -95,24 +97,31 @@ export function EnhancedContactModal({ className }: EnhancedContactModalProps) {
       opacity: 1,
       transition: { staggerChildren: 0.1, delayChildren: 0.2 }
     }
-  };
+  }
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { type: 'spring', stiffness: 100, damping: 12 }
+      transition: { type: "spring", stiffness: 100, damping: 12 }
     }
-  };
+  }
 
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          className="h-14 px-6 rounded-full border-2 border-primary text-primary hover:bg-primary/10 transition-all duration-300 hover:scale-105 active:scale-95"
-          
+          className={cn("h-12 sm:h-14 px-6 sm:px-8",
+                  "rounded-full sm:rounded-lg",
+                  "bg-amber-500 hover:bg-amber-600 dark:bg-amber-500 dark:hover:bg-amber-600",
+                  "text-white",
+                  "shadow-lg hover:shadow-xl",
+                  "ring-2 ring-amber-500/20 hover:ring-amber-600/20",
+                  "transition-all duration-300 hover:scale-105 active:scale-98",
+                  "font-medium text-base",
+                  className)}
         >
           Contact Me
         </Button>
@@ -189,7 +198,7 @@ export function EnhancedContactModal({ className }: EnhancedContactModalProps) {
           >
             <form onSubmit={handleSubmit} className="space-y-6 relative">
               <AnimatePresence mode="wait">
-                {submissionStatus === 'success' && (
+                {submissionStatus === "success" && (
                   <motion.div
                     key="success"
                     initial={{ opacity: 0, y: 50 }}
@@ -204,7 +213,7 @@ export function EnhancedContactModal({ className }: EnhancedContactModalProps) {
                   </motion.div>
                 )}
                 
-                {submissionStatus === 'error' && (
+                {submissionStatus === "error" && (
                   <motion.div
                     key="error"
                     initial={{ opacity: 0, y: 50 }}
@@ -281,6 +290,6 @@ export function EnhancedContactModal({ className }: EnhancedContactModalProps) {
         </motion.div>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
 

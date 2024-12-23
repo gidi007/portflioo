@@ -24,6 +24,13 @@ export const SkillCard: React.FC<SkillCardProps> = ({ skill, index }) => {
         damping: 12,
         delay: index * 0.1
       }
+    },
+    exit: {
+      opacity: 0,
+      y: -20,
+      transition: {
+        duration: 0.3
+      }
     }
   };
 
@@ -32,33 +39,25 @@ export const SkillCard: React.FC<SkillCardProps> = ({ skill, index }) => {
       variants={variants}
       initial="hidden"
       animate="visible"
-      whileHover={{ y: -5 }}
+      exit="exit"
       className="group"
     >
       <Card className={cn(
         "p-6 transition-all duration-300",
-        "hover:shadow-lg dark:hover:shadow-primary/5",
+        "shadow-md hover:shadow-xl",
         "bg-card dark:bg-card",
         "backdrop-blur-sm"
       )}>
         <div className="relative">
           <CircularProgress value={skill.value} label={skill.label} />
           <motion.div
-            className={cn(
-              "absolute inset-0 flex items-center justify-center",
-              "opacity-0 group-hover:opacity-100 transition-opacity"
-            )}
+            className="absolute inset-0 flex items-center justify-center"
             initial={false}
-            whileHover={{ scale: 1.05 }}
           >
             <div className={cn(
               "text-center",
-              "bg-background/80 dark:bg-background/60",
-              "backdrop-blur-sm p-2 rounded-lg"
+              "p-2 rounded-lg"
             )}>
-              <p className="text-sm font-medium text-muted-foreground">
-                Proficiency Level
-              </p>
               <motion.p 
                 className="text-2xl font-bold text-primary"
                 initial={{ scale: 0 }}

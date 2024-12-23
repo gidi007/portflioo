@@ -27,6 +27,13 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({ item, direction = 'l
         damping: 12,
         delay: index * 0.2
       }
+    },
+    exit: {
+      opacity: 0,
+      x: direction === 'left' ? -50 : 50,
+      transition: {
+        duration: 0.3
+      }
     }
   };
 
@@ -34,52 +41,39 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({ item, direction = 'l
     <motion.div
       variants={variants}
       initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
+      animate="visible"
+      exit="exit"
+      layout
     >
       <Card className={cn(
         "p-6 transition-all duration-300",
-        "hover:shadow-lg",
+        "shadow-md hover:shadow-xl",
         "bg-card dark:bg-card",
         "backdrop-blur-sm",
-        "relative overflow-hidden group"
+        "relative overflow-hidden"
       )}>
-        <motion.div 
-          className="absolute inset-0 bg-primary/10 dark:bg-primary/5"
-          initial={{ scaleY: 0 }}
-          whileHover={{ scaleY: 1 }}
-          transition={{ duration: 0.3 }}
-        />
         <div className="relative z-10">
           <motion.span 
             className="text-sm text-primary font-medium block mb-2"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }}
+            layout
           >
             {item.date}
           </motion.span>
           <motion.h3 
-            className="text-lg font-semibold mb-1 text-foreground dark:text-foreground"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.3 }}
+            className="text-lg font-semibold mb-1 text-foreground"
+            layout
           >
             {item.title}
           </motion.h3>
           <motion.p 
             className="text-muted-foreground mb-2"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.4 }}
+            layout
           >
             {item.organization}
           </motion.p>
           <motion.p 
-            className="text-sm leading-relaxed text-foreground dark:text-foreground"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.5 }}
+            className="text-sm leading-relaxed text-foreground"
+            layout
           >
             {item.description}
           </motion.p>

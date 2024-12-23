@@ -110,50 +110,30 @@ export function AnimatedProfile({
         }}
       >
         <motion.div
-          className="absolute -inset-4 bg-amber-500/20 dark:bg-amber-400/20 rounded-[inherit] blur-2xl"
-          animate={{
-            opacity: isHovered || isTouched ? 0.8 : 0.4,
-            scale: isHovered || isTouched ? 1.05 : 1
-          }}
-          transition={{ duration: 0.4, type: "spring", stiffness: 200 }}
-        />
-
-        <motion.div
           className={cn(
             "w-full h-full relative overflow-hidden cursor-pointer",
-            "transform-gpu backface-hidden rounded-3xl"
+            "transform-gpu backface-hidden",
+            "rounded-full lg:rounded-2xl", // Circular on mobile, rounded corners on desktop
+            "ring-4 ring-neutral-200/50 dark:ring-neutral-800/50", // Subtle ring effect
+            "bg-gradient-to-br from-neutral-50 to-neutral-200 dark:from-neutral-800 dark:to-neutral-900" // Gradient background
           )}
           animate={{
-            scale: isHovered || isTouched ? 1.03 : 1,
+            scale: isHovered || isTouched ? 1.02 : 1,
             boxShadow: isHovered || isTouched 
-              ? '0 25px 50px rgba(245, 158, 11, 0.3)' 
-              : '0 15px 35px rgba(245, 158, 11, 0.2)'
+              ? '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 8px 24px -8px rgba(0, 0, 0, 0.15)' 
+              : '0 20px 40px -12px rgba(0, 0, 0, 0.2), 0 4px 16px -8px rgba(0, 0, 0, 0.1)'
           }}
           transition={{ 
             duration: 0.4,
             type: "spring",
             stiffness: 200
           }}
-          style={{
-            border: '3px solid',
-            borderColor: 'rgba(245, 158, 11, 0.3)',
-          }}
           onClick={onClick}
         >
           <motion.div
-            className="absolute inset-0 bg-gradient-to-br from-white/40 to-amber-500/30 dark:from-white/20 dark:to-amber-400/20 opacity-0"
-            animate={{
-              opacity: isHovered || isTouched ? 0.6 : 0
-            }}
-            transition={{
-              duration: 0.3
-            }}
-          />
-
-          <motion.div
             className="relative w-full h-full transform-gpu"
             animate={{
-              scale: isHovered || isTouched ? 1.05 : 1
+              scale: isHovered || isTouched ? 1.03 : 1
             }}
             transition={{
               type: "spring",
@@ -166,9 +146,9 @@ export function AnimatedProfile({
                 src={imageSrc}
                 alt={alt}
                 fill
-                sizes="(max-width: 640px) 320px, (max-width: 768px) 400px, 500px"
+                sizes="(max-width: 640px) 230px, (max-width: 1024px) 320px, 45vw"
                 className={cn(
-                  "object-cover transition-all duration-500",
+                  "object-contain lg:object-cover transition-all duration-500",
                   "transform-gpu backface-hidden"
                 )}
                 priority
@@ -190,7 +170,7 @@ export function AnimatedProfile({
               <motion.span
                 className={cn(
                   "absolute left-1/2 bottom-8 -translate-x-1/2",
-                  "text-white text-xl md:text-2xl font-semibold",
+                  "text-white text-lg sm:text-xl font-semibold",
                   "whitespace-nowrap tracking-wide"
                 )}
                 initial={{ opacity: 0, y: 20 }}

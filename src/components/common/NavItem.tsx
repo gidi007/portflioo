@@ -173,8 +173,9 @@ export function NavItem({
           className={cn(
             "flex items-center justify-center w-14 h-14 rounded-full",
             "transition-colors duration-300 relative",
-            isActive ? "bg-primary text-primary-foreground" :
-            "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+            isActive 
+              ? "text-primary-foreground" 
+              : "text-foreground dark:text-neutral-200"
           )}
           initial={false}
           animate={isPressed ? "pressed" : "initial"}
@@ -191,16 +192,17 @@ export function NavItem({
           </motion.div>
 
           <AnimatePresence mode="wait">
-            {isActive && (
-              <motion.div
-                layoutId="mobile-active-bg"
-                className="absolute inset-0 bg-primary rounded-full"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.8, opacity: 0 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              />
-            )}
+            <motion.div
+              layoutId="mobile-active-bg"
+              className={cn(
+                "absolute inset-0 rounded-full",
+                isActive ? "bg-primary" : "bg-accent/50"
+              )}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            />
           </AnimatePresence>
 
           <AnimatePresence>
@@ -242,22 +244,16 @@ export function NavItem({
           variants={expandVariants}
           animate={isHovered ? "expanded" : "collapsed"}
         >
-                  <AnimatePresence mode="wait">
-          {(isActive || isHovered) && (
+          <AnimatePresence mode="wait">
             <motion.div
               layoutId="desktop-active-bg"
               className={cn(
                 "absolute inset-0 rounded-full z-10",
-                isActive ? "bg-primary" : "bg-primary"
+                isActive ? "bg-primary" : "bg-neutral-100"
               )}
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
             
             />
-          )}
-        </AnimatePresence>
+          </AnimatePresence>
 
           <motion.div 
             className="relative z-10 flex items-center px-3"
@@ -266,7 +262,10 @@ export function NavItem({
             <motion.div
               className={cn(
                 "flex items-center gap-3",
-                isActive ? "text-primary-foreground" : "text-foreground"
+                "text-white",
+                isActive 
+                  ? "text-primary-foreground" 
+                  : "text-foreground dark:text-neutral-200"
               )}
               animate={{ 
                 x: isExpanding ? 4 : 0,

@@ -95,7 +95,7 @@ export interface ProjectImage {
     {
       id: 2,
       title: 'Admin Dashboard for a sports betting application',
-      category: 'Web Application',
+      category: 'Web Application' + 'Dashboard Design',
       images: [
         { 
           src: '/images/job2/image_original.png', 
@@ -250,7 +250,7 @@ export interface ProjectImage {
     {
       id: 4,
       title: 'Responsive Landing page with Animation',
-      category: 'Dashboard Design + Cross-Platform Development + Web Application',
+      category: 'Dashboard Design' + 'Cross-Platform Development' + 'Web Application',
       images: [
         { 
           src: '/images/job4/image_original4.png', 
@@ -449,7 +449,7 @@ export interface ProjectImage {
     {
       id: 6,
       title: 'E-commerce site for furniture',
-      category: 'Dashboard Design + Cross-Platform Development + Web Application',
+      category: 'Dashboard Design'+ 'Cross-Platform Development' + 'Web Application',
       images: [
         { 
           src: '/images/job6/image_original1.png', 

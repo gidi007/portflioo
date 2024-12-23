@@ -1,6 +1,7 @@
-'use client' 
+'use client'
+
 import React, { useState, useEffect } from 'react';
-import { motion, useScroll, useSpring } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Download, ExternalLink, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -12,29 +13,31 @@ import { AnimatedProfile } from './AnimatedProfile';
 import { skills, personalInfo, stats, experience, education } from './data';
 import { cn } from '@/lib/utils';
 
-const fadeInUpVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
+const pageVariants = {
+  initial: { 
+    opacity: 0,
+  },
+  animate: { 
     opacity: 1,
-    y: 0,
     transition: {
-      delay: i * 0.1,
-      duration: 0.5,
+      duration: 0.8,
       ease: 'easeOut',
-    },
-  }),
+      staggerChildren: 0.1
+    }
+  },
+  exit: {
+    opacity: 0,
+    transition: {
+      duration: 0.6,
+      ease: 'easeIn'
+    }
+  }
 };
 
 const About: React.FC = () => {
   const [isClient, setIsClient] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string>('info');
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001,
-  });
 
   useEffect(() => {
     setIsClient(true);
@@ -52,25 +55,21 @@ const About: React.FC = () => {
   if (!isClient) return null;
 
   return (
-    <>
-      <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-primary z-50 origin-left"
-        style={{ scaleX }}
-      />
-
+    <AnimatePresence mode="wait">
       <motion.section 
-        className="min-h-screen bg-gradient-to-b from-background to-background-light dark:from-background-dark dark:to-background"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
+        className="min-h-screen bg-gradient-to-b from-background to-background-light dark:from-background-dark dark:to-background py-8"
+        variants={pageVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
       >
-        <div className="container mx-auto px-4 py-16 md:py-24">
+        <div className="container mx-auto px-4 overflow-hidden">
           {/* Header Section */}
           <motion.div
-            initial="hidden"
-            animate="visible"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="relative mb-12 md:mb-20"
+            className="relative mb-12"
           >
             <SectionHeader title="ABOUT" highlight="ME" shadowText="RESUME" />
             <motion.div
@@ -89,7 +88,12 @@ const About: React.FC = () => {
                 key={section}
                 variant={activeSection === section ? 'default' : 'outline'}
                 onClick={() => setActiveSection(section)}
-                className="w-full capitalize text-sm py-2 px-3"
+                className={cn(
+                  "w-full capitalize text-sm py-2 px-3",
+                  "transition-all duration-300",
+                  "hover:scale-105 active:scale-95",
+                  "shadow-sm hover:shadow-md"
+                )}
               >
                 {section}
               </Button>
@@ -101,14 +105,12 @@ const About: React.FC = () => {
             {/* Info Section */}
             <motion.div 
               className={cn(activeSection !== 'info' && 'hidden md:block')}
-              initial="hidden"
-              animate="visible"
-              variants={fadeInUpVariants}
+              layout
             >
               <div className="grid md:grid-cols-12 gap-8">
                 {/* Personal Info Card */}
-                <Card className="md:col-span-7 p-8 space-y-6 bg-card">
-                  <h3 className="text-2xl font-semibold flex items-center text-card-foreground">
+                <Card className="md:col-span-7 p-6 sm:p-8 bg-card">
+                  <h3 className="text-2xl font-semibold flex items-center text-card-foreground mb-6">
                     PERSONAL INFOS
                     <motion.span
                       className="ml-2"
@@ -128,16 +130,18 @@ const About: React.FC = () => {
                     />
                   </div>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  {/* Personal Info Grid - Always 2 columns */}
+                  <div className="grid grid-cols-2 gap-4 sm:gap-6">
                     {Object.entries(personalInfo).map(([key, value], index) => (
                       <motion.div
                         key={key}
-                        variants={fadeInUpVariants}
-                        custom={index}
-                        className="group p-4 rounded-lg hover:bg-accent transition-colors duration-300"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="p-3 sm:p-4 rounded-lg bg-accent/5 overflow-hidden"
                       >
-                        <span className="text-sm text-muted-foreground capitalize">{key}:</span>
-                        <span className="font-medium block text-card-foreground mt-1">
+                        <span className="text-xs sm:text-sm text-muted-foreground capitalize block mb-1">{key}:</span>
+                        <span className="font-medium text-sm sm:text-base text-card-foreground truncate block">
                           {key === 'freelance' ? (
                             <span className="text-green-500">{value}</span>
                           ) : key === 'LinkedIn' ? (
@@ -147,7 +151,7 @@ const About: React.FC = () => {
                               rel="noopener noreferrer"
                               className="text-primary flex items-center hover:underline"
                             >
-                              View LinkedIn <ExternalLink className="ml-1 h-4 w-4" />
+                              View LinkedIn <ExternalLink className="ml-1 h-4 w-4 flex-shrink-0" />
                             </a>
                           ) : (
                             value
@@ -157,10 +161,17 @@ const About: React.FC = () => {
                     ))}
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-4 pt-6">
+                  <div className="flex flex-col sm:flex-row gap-4 mt-8">
                     <Button
                       onClick={() => setIsContactOpen(true)}
-                      className="flex-1 text-base font-semibold"
+                      className={cn(
+                        "flex-1 text-base font-semibold",
+                        "transition-all duration-300",
+                        "hover:scale-105 active:scale-95",
+                        "bg-primary hover:bg-primary/90",
+                        "shadow-lg hover:shadow-xl",
+                        "ring-2 ring-primary/20 hover:ring-primary/30"
+                      )}
                       size="lg"
                     >
                       Get in Touch
@@ -168,7 +179,13 @@ const About: React.FC = () => {
                     <Button
                       onClick={handleDownloadCV}
                       variant="outline"
-                      className="flex-1 text-base font-semibold"
+                      className={cn(
+                        "flex-1 text-base font-semibold",
+                        "transition-all duration-300",
+                        "hover:scale-105 active:scale-95",
+                        "shadow-lg hover:shadow-xl",
+                        "ring-2 ring-primary/10 hover:ring-primary/20"
+                      )}
                       size="lg"
                     >
                       <Download className="mr-2 h-5 w-5" />
@@ -179,26 +196,18 @@ const About: React.FC = () => {
 
                 {/* Stats Grid */}
                 <div className="md:col-span-5 grid grid-cols-2 gap-4">
-                  {stats.map((stat, index) => (
-                    <motion.div
+                  {stats.map((stat) => (
+                    <Card 
                       key={stat.label}
-                      variants={fadeInUpVariants}
-                      custom={index}
+                      className="p-6 bg-card dark:bg-card h-[200px] flex items-center justify-center"
                     >
-                      <Card className="p-6 hover:shadow-lg transition-shadow duration-300 bg-card">
-                        <div className="text-center">
-                          <motion.span
-                            className="block text-3xl md:text-4xl font-bold text-primary mb-2"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2 * (index + 1) }}
-                          >
-                            {stat.value}
-                          </motion.span>
-                          <span className="text-sm text-muted-foreground">{stat.label}</span>
-                        </div>
-                      </Card>
-                    </motion.div>
+                      <div className="text-center">
+                        <span className="block text-3xl md:text-4xl font-bold text-primary mb-2">
+                          {stat.value}
+                        </span>
+                        <span className="text-sm text-muted-foreground">{stat.label}</span>
+                      </div>
+                    </Card>
                   ))}
                 </div>
               </div>
@@ -207,11 +216,9 @@ const About: React.FC = () => {
             {/* Skills Section */}
             <motion.div 
               className={cn(activeSection !== 'skills' && 'hidden md:block')}
-              initial="hidden"
-              animate="visible"
-              variants={fadeInUpVariants}
+              layout
             >
-              <Card className="p-8 bg-card">
+              <Card className="p-6 sm:p-8 bg-card">
                 <h2 className="text-2xl font-bold mb-8 text-card-foreground">MY SKILLS</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
                   {skills.map((skill, index) => (
@@ -224,12 +231,10 @@ const About: React.FC = () => {
             {/* Timeline Section */}
             <motion.div 
               className={cn(activeSection !== 'timeline' && 'hidden md:block')}
-              initial="hidden"
-              animate="visible"
-              variants={fadeInUpVariants}
+              layout
             >
               <div className="grid md:grid-cols-2 gap-8">
-                <Card className="p-8 bg-card">
+                <Card className="p-6 sm:p-8 bg-card">
                   <h2 className="text-2xl font-semibold mb-8 text-card-foreground">EXPERIENCE</h2>
                   <div className="space-y-6">
                     {experience.map((item, index) => (
@@ -238,7 +243,7 @@ const About: React.FC = () => {
                   </div>
                 </Card>
 
-                <Card className="p-8 bg-card">
+                <Card className="p-6 sm:p-8 bg-card">
                   <h2 className="text-2xl font-semibold mb-8 text-card-foreground">EDUCATION</h2>
                   <div className="space-y-6">
                     {education.map((item, index) => (
@@ -257,7 +262,7 @@ const About: React.FC = () => {
         onClose={() => setIsContactOpen(false)}
         personalInfo={personalInfo}
       />
-    </>
+    </AnimatePresence>
   );
 };
 

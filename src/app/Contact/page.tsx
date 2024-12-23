@@ -51,8 +51,8 @@ export default function Contact() {
           variants={itemVariants}
         >
           <SectionHeader
-            title="GET IN"
-            highlight="TOUCH"
+            title="LET'S"
+            highlight="CONNECT"
             shadowText="CONTACT"
           />
         </motion.div>
