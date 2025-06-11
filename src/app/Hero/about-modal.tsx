@@ -1,228 +1,171 @@
-'use client';
+"use client"
 
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, Download, ExternalLink, Sparkles } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { SectionHeader } from '@/components/ui/section-header';
-import { SkillCard } from '../About/skill-card';
-import { TimelineCard } from '../About/time-line-card';
-import { skills, personalInfo, stats, experience, education } from '../About/data';
-import { AnimatedProfile } from '../About/AnimatedProfile';
-
-
-const fadeInUpVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: i * 0.1,
-      duration: 0.5,
-      ease: 'easeOut',
-    },
-  }),
-};
-
-const modalVariants = {
-  hidden: { opacity: 0, scale: 0.95 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: { duration: 0.3, ease: 'easeOut' }
-  },
-  exit: {
-    opacity: 0,
-    scale: 0.95,
-    transition: { duration: 0.2, ease: 'easeIn' }
-  }
-};
+import React from "react"
+import { motion } from "framer-motion"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { ExternalLink, X } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface AboutModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen: boolean
+  onClose: () => void
 }
 
-export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
-  const handleDownloadCV = () => {
-    const link = document.createElement('a');
-    link.href = '/FAVOUR_BAWA_RESUME.pdf';
-    link.download = 'FAVOUR_BAWA_RESUME.pdf';
-    link.click();
-  };
-
+export function AboutModal({ isOpen, onClose }: AboutModalProps) {
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-          />
-
-          {/* Modal */}
-          <motion.div
-            className="fixed inset-2 md:inset-4 lg:inset-10 z-50 bg-background rounded-2xl shadow-xl overflow-hidden"
-            variants={modalVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-          >
-            {/* Close button */}
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      {/* Remove asChild here to test */}
+      <DialogContent>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.3 }}
+          className={cn(
+            "relative bg-white dark:bg-gray-900 rounded-xl shadow-xl max-w-lg w-full mx-4 md:mx-auto max-h-[85vh] overflow-y-auto",
+            "border border-gray-200 dark:border-gray-700",
+            "focus:outline-none"
+          )}
+        >
+          {/* Remove asChild here to test */}
+          <DialogClose>
             <button
-              onClick={onClose}
-              className="absolute top-4 right-4 p-2 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors"
-              aria-label="Close modal"
+              aria-label="Close"
+              className="absolute -top-5 -right-5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-full p-2 shadow-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              type="button"
             >
-              <X className="h-6 w-6" />
+              <X className="w-5 h-5 text-gray-700 dark:text-yellow-400" />
             </button>
+          </DialogClose>
 
-            {/* Scrollable content */}
-            <div className="h-full overflow-y-auto overflow-x-hidden px-4 md:px-6 py-6 md:py-8">
-              <div className="max-w-5xl mx-auto space-y-8">
-                {/* Header */}
-                <motion.div
-                  initial="hidden"
-                  animate="visible"
-                  transition={{ duration: 0.6 }}
-                  className="relative"
-                >
-                  <SectionHeader title="ABOUT" highlight="ME" shadowText="RESUME" />
-                  <motion.div
-                    className="absolute -top-4 -right-4 text-primary"
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+          {/* Header */}
+          <DialogHeader className="px-6 pt-6 pb-2">
+            <DialogTitle className="text-2xl font-semibold text-gray-900 dark:text-yellow-400">
+              About Me
+            </DialogTitle>
+            <DialogDescription className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+              Learn more about my background, skills, and experience.
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* Content */}
+          <div className="px-6 pb-6 space-y-6 text-gray-800 dark:text-gray-300">
+            {/* Biography */}
+            <section>
+              <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-yellow-400">Biography</h3>
+              <p className="leading-relaxed">
+                I'm a passionate frontend developer with expertise in creating responsive, accessible, and performant web applications.
+                With a strong foundation in modern JavaScript frameworks and a keen eye for design, I bridge the gap between
+                functionality and aesthetics to deliver exceptional user experiences.
+              </p>
+              <p className="leading-relaxed mt-2">
+                My journey in web development began over 5 years ago, and I've since worked with various technologies and teams
+                to build solutions that solve real-world problems. I'm constantly learning and adapting to the ever-evolving
+                landscape of web development.
+              </p>
+            </section>
+
+            {/* Core Skills */}
+            <section>
+              <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-yellow-400">Core Skills</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {[
+                  "React", "Next.js", "TypeScript",
+                  "Tailwind CSS", "Framer Motion", "Responsive Design",
+                  "Accessibility", "Performance Optimization", "UI/UX Design"
+                ].map((skill) => (
+                  <div
+                    key={skill}
+                    className="bg-gray-100 dark:bg-gray-800 rounded-md px-3 py-2 text-sm font-medium text-gray-900 dark:text-yellow-400 text-center"
                   >
-                    <Sparkles className="h-8 w-8" />
-                  </motion.div>
-                </motion.div>
-
-                {/* Personal Info and Stats */}
-                <div className="grid md:grid-cols-2 gap-6">
-                  <motion.div variants={fadeInUpVariants} initial="hidden" animate="visible" custom={0}>
-                    <Card className="p-6 space-y-4 bg-opacity-80 backdrop-blur-sm">
-                      <h3 className="text-xl font-semibold flex items-center">
-                        PERSONAL INFOS
-                        <motion.span
-                          className="ml-2"
-                          animate={{ y: [0, -5, 0] }}
-                          transition={{ duration: 2, repeat: Infinity }}
-                        >
-                          👋
-                        </motion.span>
-                      </h3>
-                        <div className="flex justify-center mb-6">
-                          <AnimatedProfile
-                            imageSrc="/placeholder.png"
-                            alt="Favour Bawa"
-                            className="w-32 h-32 rounded-full"
-                          />
-                        </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {Object.entries(personalInfo).map(([key, value], index) => (
-                          <motion.div
-                            key={key}
-                            variants={fadeInUpVariants}
-                            custom={index + 1}
-                            className="group p-3 rounded-lg hover:bg-primary/5 transition-colors"
-                          >
-                            <span className="text-sm text-muted-foreground capitalize">{key}:</span>
-                            <span className="font-medium block">
-                              {key === 'freelance' ? (
-                                <span className="text-green-500">{value}</span>
-                              ) : key === 'LinkedIn' ? (
-                                <a
-                                  href={value}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-primary flex items-center hover:underline"
-                                >
-                                  View LinkedIn <ExternalLink className="ml-1 h-4 w-4" />
-                                </a>
-                              ) : (
-                                value
-                              )}
-                            </span>
-                          </motion.div>
-                        ))}
-                      </div>
-                      <Button
-                        onClick={handleDownloadCV}
-                        variant="outline"
-                        className="w-full mt-4"
-                        size="lg"
-                      >
-                        <Download className="mr-2 h-4 w-4" />
-                        Download CV
-                      </Button>
-                    </Card>
-                  </motion.div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    {stats.map((stat, index) => (
-                      <motion.div
-                        key={stat.label}
-                        variants={fadeInUpVariants}
-                        initial="hidden"
-                        animate="visible"
-                        custom={index + 1}
-                      >
-                        <Card className="p-4 hover:shadow-lg transition-shadow bg-opacity-80 backdrop-blur-sm">
-                          <div className="text-center">
-                            <span className="block text-2xl font-bold text-primary mb-1">
-                              {stat.value}
-                            </span>
-                            <span className="text-sm text-muted-foreground">{stat.label}</span>
-                          </div>
-                        </Card>
-                      </motion.div>
-                    ))}
+                    {skill}
                   </div>
-                </div>
-
-                {/* Skills */}
-                <motion.div
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                >
-                  <h2 className="text-2xl font-bold text-center mb-6">MY SKILLS</h2>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {skills.map((skill, index) => (
-                      <SkillCard key={skill.label} skill={skill} index={index} />
-                    ))}
-                  </div>
-                </motion.div>
-
-                {/* Experience & Education */}
-                <div className="grid md:grid-cols-2 gap-8">
-                  <div>
-                    <h2 className="text-xl font-semibold mb-4">EXPERIENCE</h2>
-                    <div className="space-y-4">
-                      {experience.map((item, index) => (
-                        <TimelineCard key={item.title} item={item} direction="left" index={index} />
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-semibold mb-4">EDUCATION</h2>
-                    <div className="space-y-4">
-                      {education.map((item, index) => (
-                        <TimelineCard key={item.title} item={item} direction="right" index={index} />
-                      ))}
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
-            </div>
+            </section>
+
+            {/* Experience Highlights */}
+            <section>
+              <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-yellow-400">Experience Highlights</h3>
+              <div className="space-y-4">
+                {[
+                  {
+                    role: "Senior Frontend Developer",
+                    company: "Tech Innovations Inc.",
+                    period: "2021 - Present",
+                    description: "Leading frontend development for enterprise applications, mentoring junior developers, and implementing best practices."
+                  },
+                  {
+                    role: "Frontend Developer",
+                    company: "Digital Solutions Ltd.",
+                    period: "2019 - 2021",
+                    description: "Developed responsive web applications using React and collaborated with UX designers to implement pixel-perfect interfaces."
+                  },
+                  {
+                    role: "Web Developer Intern",
+                    company: "StartUp Ventures",
+                    period: "2018 - 2019",
+                    description: "Assisted in building and maintaining company websites and gained hands-on experience with modern web technologies."
+                  }
+                ].map((exp, idx) => (
+                  <div key={idx} className="border-l-2 border-yellow-400 dark:border-yellow-600 pl-4">
+                    <h4 className="font-semibold text-gray-900 dark:text-yellow-400">{exp.role}</h4>
+                    <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
+                      <span>{exp.company}</span>
+                      <span className="bg-gray-200 dark:bg-gray-700 rounded-full px-2 py-0.5 text-xs">{exp.period}</span>
+                    </div>
+                    <p className="mt-1 text-sm">{exp.description}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Education */}
+            <section>
+              <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-yellow-400">Education</h3>
+              <div className="border-l-2 border-yellow-400 dark:border-yellow-600 pl-4">
+                <h4 className="font-semibold text-gray-900 dark:text-yellow-400">BSc in Computer Science</h4>
+                <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
+                  <span>University of Technology</span>
+                  <span className="bg-gray-200 dark:bg-gray-700 rounded-full px-2 py-0.5 text-xs">2015 - 2019</span>
+                </div>
+                <p className="mt-1 text-sm">
+                  Specialized in web technologies and software engineering. Graduated with honors.
+                </p>
+              </div>
+            </section>
+
+            {/* Resume Button */}
+            <section className="pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex justify-center">
+                <Button
+                  variant="outline"
+                  asChild
+                  className="group"
+                >
+                  <a
+                    href="/FAVOUR BAWA - RESUME.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-yellow-600 dark:text-yellow-400"
+                  >
+                    View Full Resume
+                    <ExternalLink className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </a>
+                </Button>
+              </div>
+            </section>
+          </div>
           </motion.div>
-        </>
-      )}
-    </AnimatePresence>
-  );
-};
+      </DialogContent>
+    </Dialog>
+  )
+}

@@ -1,127 +1,240 @@
-'use client'
+"use client"
 
-import { useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
-import { SectionHeader } from '@/components/ui/section-header'
-import { ContactForm } from './ContactForm'
-import { socialLinks, contactInfo } from '../Contact/contactData'
+import { motion } from "framer-motion"
+import { MapPin, Mail, Phone, Send } from "lucide-react"
+import { SectionHeader } from "@/components/ui/section-header"
+import { cn } from "@/lib/utils"
 
-export default function Contact() {
-  const contactRef = useRef<HTMLElement>(null)
-  const isInView = useInView(contactRef, { once: false, amount: 0.1 })
+const contactInfo = [
+  {
+    icon: MapPin,
+    title: "ADDRESS POINT",
+    content: "123 Street Ohio, OH, United States Of America 750065",
+  },
+  {
+    icon: Mail,
+    title: "MAIL ME!",
+    content: "favourbawa04@gmail.com",
+  },
+  {
+    icon: Phone,
+    title: "CALL ME!",
+    content: "+234 808 683 1929",
+  },
+]
 
+export default function ContactSection() {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.2
-      }
-    }
+        staggerChildren: 0.2,
+        delayChildren: 0.3,
+      },
+    },
   }
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        type: 'spring',
+        type: "spring",
         stiffness: 100,
-        damping: 12
-      }
-    }
+        damping: 20,
+      },
+    },
   }
 
   return (
-    <motion.section 
-      id="contact" 
-      className="relative py-20 md:py-32 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 overflow-hidden"
-      ref={contactRef}
-      initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
-      variants={containerVariants}
+    <motion.section
+      className={cn("min-h-screen", "bg-background dark:bg-background-dark", "py-20 lg:py-32")}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 -z-10" />
-
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+      <div className="container mx-auto px-6 lg:px-12 max-w-7xl">
+        {/* Header */}
         <motion.div
-          className="text-center mb-16 md:mb-24"
-          variants={itemVariants}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-20"
         >
-          <SectionHeader
-            title="LET'S"
-            highlight="CONNECT"
-            shadowText="CONTACT"
-          />
+          <SectionHeader title="DON'T BE" highlight="SHY !" shadowText="CONTACT" />
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20">
+        {/* Content */}
+        <motion.div
+          className="grid lg:grid-cols-2 gap-16 lg:gap-20"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
           {/* Left Column - Contact Info */}
-          <motion.div
-            variants={itemVariants}
-            className="space-y-10"
-          >
-            <motion.div variants={itemVariants} className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg">
-              <h2 className="text-3xl font-bold mb-4 text-gray-800 dark:text-gray-100">
-                Don&apos;t Be Shy!
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                Feel free to get in touch. I am always open to discussing new projects, 
-                creative ideas, or opportunities to be part of your visions.
-              </p>
-            </motion.div>
+          <motion.div className="space-y-12" variants={itemVariants}>
+            <motion.p
+              className={cn("text-lg lg:text-xl leading-relaxed", "text-foreground-light dark:text-muted-dark")}
+              variants={itemVariants}
+            >
+              Feel free to get in touch with me. I am always open to discussing new projects, creative ideas or
+              opportunities to be part of your visions.
+            </motion.p>
 
-            <motion.div className="space-y-6" variants={itemVariants}>
-              {contactInfo.map((item) => (
-                <motion.div
-                  key={item.title}
-                  className="flex items-center group bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md transition-all duration-300 hover:shadow-lg"
-                  variants={itemVariants}
-                >
-                  <div className={`w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mr-4 transition-all group-hover:bg-primary/20 ${item.color}`}>
-                    <item.icon className="w-6 h-6" />
+            <div className="space-y-8">
+              {contactInfo.map((item, index) => (
+                <motion.div key={item.title} className="flex items-start gap-6" variants={itemVariants} custom={index}>
+                  <div
+                    className={cn(
+                      "w-12 h-12 lg:w-14 lg:h-14",
+                      "rounded-full",
+                      "bg-primary-500 dark:bg-primary-600",
+                      "flex items-center justify-center",
+                      "shadow-lg",
+                    )}
+                  >
+                    <item.icon className="w-6 h-6 lg:w-7 lg:h-7 text-white" />
                   </div>
-                  <div>
-                    <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">
+                  <div className="space-y-2">
+                    <h3
+                      className={cn(
+                        "text-sm lg:text-base font-bold tracking-wider",
+                        "text-foreground-light dark:text-muted-dark",
+                      )}
+                    >
                       {item.title}
                     </h3>
-                    <p className="text-base font-medium text-gray-800 dark:text-gray-200">
+                    <p className={cn("text-base lg:text-lg", "text-foreground dark:text-foreground-dark")}>
                       {item.content}
                     </p>
                   </div>
                 </motion.div>
               ))}
-            </motion.div>
-
-            <motion.div
-              className="flex justify-center space-x-4 pt-4"
-              variants={itemVariants}
-            >
-              {socialLinks.map((social) => (
-                <motion.a
-                  key={social.label}
-                  href={social.href}
-                  className={`w-12 h-12 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center ${social.color} hover:bg-primary/10 dark:hover:bg-primary/20 transition-all duration-300 shadow-md hover:shadow-lg`}
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  whileTap={{ scale: 0.95 }}
-                  variants={itemVariants}
-                  aria-label={social.label}
-                >
-                  <social.icon className="w-6 h-6" />
-                </motion.a>
-              ))}
-            </motion.div>
+            </div>
           </motion.div>
 
-          {/* Right Column - Form */}
+          {/* Right Column - Contact Form */}
           <motion.div variants={itemVariants}>
-            <ContactForm />
+            <form className="space-y-6">
+              {/* Name and Email Row */}
+              <div className="grid md:grid-cols-2 gap-6">
+                <motion.input
+                  type="text"
+                  placeholder="YOUR NAME"
+                  className={cn(
+                    "w-full px-6 py-4 rounded-full",
+                    "bg-background-light dark:bg-background-darker",
+                    "border-2 border-border-light dark:border-border-dark",
+                    "focus:border-primary-500 dark:focus:border-primary-400",
+                    "text-foreground dark:text-foreground-dark",
+                    "placeholder-foreground-light dark:placeholder-muted-dark",
+                    "transition-all duration-300",
+                    "focus:outline-none focus:ring-0",
+                  )}
+                  variants={itemVariants}
+                />
+                <motion.input
+                  type="email"
+                  placeholder="YOUR EMAIL"
+                  className={cn(
+                    "w-full px-6 py-4 rounded-full",
+                    "bg-background-light dark:bg-background-darker",
+                    "border-2 border-border-light dark:border-border-dark",
+                    "focus:border-primary-500 dark:focus:border-primary-400",
+                    "text-foreground dark:text-foreground-dark",
+                    "placeholder-foreground-light dark:placeholder-muted-dark",
+                    "transition-all duration-300",
+                    "focus:outline-none focus:ring-0",
+                  )}
+                  variants={itemVariants}
+                />
+              </div>
+
+              {/* Subject */}
+              <motion.input
+                type="text"
+                placeholder="YOUR SUBJECT"
+                className={cn(
+                  "w-full px-6 py-4 rounded-full",
+                  "bg-background-light dark:bg-background-darker",
+                  "border-2 border-border-light dark:border-border-dark",
+                  "focus:border-primary-500 dark:focus:border-primary-400",
+                  "text-foreground dark:text-foreground-dark",
+                  "placeholder-foreground-light dark:placeholder-muted-dark",
+                  "transition-all duration-300",
+                  "focus:outline-none focus:ring-0",
+                )}
+                variants={itemVariants}
+              />
+
+              {/* Message */}
+              <motion.textarea
+                placeholder="YOUR MESSAGE"
+                rows={6}
+                className={cn(
+                  "w-full px-6 py-4 rounded-2xl",
+                  "bg-background-light dark:bg-background-darker",
+                  "border-2 border-border-light dark:border-border-dark",
+                  "focus:border-primary-500 dark:focus:border-primary-400",
+                  "text-foreground dark:text-foreground-dark",
+                  "placeholder-foreground-light dark:placeholder-muted-dark",
+                  "transition-all duration-300",
+                  "focus:outline-none focus:ring-0",
+                  "resize-none",
+                )}
+                variants={itemVariants}
+              />
+
+              {/* Submit Button */}
+              <motion.button
+                type="submit"
+                className={cn(
+                  "relative overflow-hidden rounded-full",
+                  "flex items-center",
+                  "h-14 lg:h-16",
+                  "transition-all duration-300",
+                  "group",
+                )}
+                variants={itemVariants}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="relative flex items-center h-full">
+                  <div
+                    className={cn(
+                      "px-8 lg:px-10 h-full flex items-center",
+                      "border-2 rounded-l-full",
+                      "border-foreground-light dark:border-primary-600",
+                      "bg-transparent",
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "text-sm lg:text-base font-medium tracking-wide",
+                        "text-foreground dark:text-foreground-dark",
+                      )}
+                    >
+                      SEND MESSAGE
+                    </span>
+                  </div>
+                  <div
+                    className={cn(
+                      "h-full w-14 lg:w-16 flex items-center justify-center",
+                      "rounded-r-full",
+                      "bg-primary-500 dark:bg-primary-600",
+                      "border-2 border-primary-500 dark:border-primary-600",
+                    )}
+                  >
+                    <Send className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
+                  </div>
+                </div>
+              </motion.button>
+            </form>
           </motion.div>
-        </div>
+        </motion.div>
       </div>
     </motion.section>
   )
 }
-

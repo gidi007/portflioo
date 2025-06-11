@@ -1,13 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+"use client"
 
+import { useState, useEffect, useCallback } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { cn } from "@/lib/utils"
 
-interface AnimatedHeaderProps {
-  title: string;
-  shadowText: string;
-  highlight?: string;
-  interval?: number;
-  className?: string;
+interface SectionHeaderProps {
+  title: string
+  shadowText: string
+  highlight?: string
+  interval?: number
+  className?: string
 }
 
 export const SectionHeader = ({
@@ -15,104 +17,97 @@ export const SectionHeader = ({
   shadowText,
   highlight,
   interval = 3000,
-  className = '',
-}: AnimatedHeaderProps) => {
-  const [isActive, setIsActive] = useState(false);
-  const isMobile = useMediaQuery('(max-width: 768px)');
-  const [autoplay, setAutoplay] = useState(!isMobile);
+  className = "",
+}: SectionHeaderProps) => {
+  const [isActive, setIsActive] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
-    setAutoplay(!isMobile);
-  }, [isMobile]);
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768)
+    checkMobile()
+    window.addEventListener("resize", checkMobile)
+    return () => window.removeEventListener("resize", checkMobile)
+  }, [])
 
   useEffect(() => {
-    if (!autoplay) return;
-
-    const timer = setInterval(() => {
-      setIsActive((prev) => !prev);
-    }, interval);
-
-    return () => clearInterval(timer);
-  }, [interval, autoplay]);
+    if (!isMobile) {
+      const timer = setInterval(() => {
+        setIsActive((prev) => !prev)
+      }, interval)
+      return () => clearInterval(timer)
+    }
+  }, [interval, isMobile])
 
   const handleInteraction = useCallback(() => {
     if (isMobile) {
-      setIsActive((prev) => !prev);
+      setIsActive((prev) => !prev)
     }
-  }, [isMobile]);
-
-  const handleMouseEnter = useCallback(() => {
-    if (!isMobile) {
-      setAutoplay(false);
-      setIsActive(true);
-    }
-  }, [isMobile]);
-
-  const handleMouseLeave = useCallback(() => {
-    if (!isMobile) {
-      setAutoplay(true);
-      setIsActive(false);
-    }
-  }, [isMobile]);
+  }, [isMobile])
 
   const variants = {
     hidden: {
-      y: 20,
+      y: 30,
       opacity: 0,
-      transition: { duration: 0.3, ease: 'easeInOut' }
+      scale: 0.95,
+      transition: { duration: 0.4, ease: "easeInOut" },
     },
     visible: {
       y: 0,
       opacity: 1,
-      transition: { duration: 0.3, ease: 'easeInOut' }
+      scale: 1,
+      transition: { duration: 0.4, ease: "easeInOut" },
     },
     exit: {
-      y: -20,
+      y: -30,
       opacity: 0,
-      transition: { duration: 0.3, ease: 'easeInOut' }
-    }
-  };
+      scale: 0.95,
+      transition: { duration: 0.4, ease: "easeInOut" },
+    },
+  }
 
   return (
     <div
-      className={`relative select-none ${className}`}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      className={cn("relative select-none text-center", className)}
       onClick={handleInteraction}
       role="button"
       tabIndex={0}
-      onKeyPress={(e) => e.key === 'Enter' && handleInteraction()}
+      onKeyPress={(e) => e.key === "Enter" && handleInteraction()}
     >
-      <div className="relative h-24 md:h-32 flex items-center justify-center overflow-hidden">
+      <div className="relative h-32 lg:h-40 flex items-center justify-center overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.div
-            key={isActive ? 'title' : 'shadow'}
+            key={isActive ? "title" : "shadow"}
             className="absolute inset-0 flex items-center justify-center"
             variants={variants}
             initial="hidden"
             animate="visible"
             exit="exit"
           >
-            <h2 className={`text-3xl md:text-5xl font-bold tracking-tight
-              ${isActive ? 'text-foreground' : 'text-muted-foreground/20'}`}
+            <h2
+              className={cn(
+                "text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight",
+                isActive
+                  ? "text-foreground dark:text-foreground-dark"
+                  : "text-muted-light dark:text-muted-dark",
+              )}
             >
-              {(isActive ? title : shadowText).split('').map((char, i) => (
+              {(isActive ? title : shadowText).split("").map((char, i) => (
                 <motion.span
                   key={`${char}-${i}`}
                   className="inline-block"
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.03 }}
+                  transition={{ delay: i * 0.03, duration: 0.3 }}
                 >
-                  {char}
+                  {char === " " ? "\u00A0" : char}
                 </motion.span>
               ))}
               {isActive && highlight && (
                 <motion.span
-                  className="text-primary ml-2"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
+                  className="text-primary-500 dark:text-primary-400 ml-4"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.4, duration: 0.3 }}
                 >
                   {highlight}
                 </motion.span>
@@ -121,39 +116,8 @@ export const SectionHeader = ({
           </motion.div>
         </AnimatePresence>
       </div>
-
-      <motion.div
-        className="h-1 bg-gradient-to-r from-primary/0 via-primary to-primary/0 mt-2"
-        initial={{ scaleX: 0 }}
-        animate={{ scaleX: isActive ? 1 : 0 }}
-        transition={{ duration: 0.4 }}
-      />
-
-      {isMobile && (
-        <div className="mt-2 text-center text-sm text-muted-foreground">
-        </div>
-      )}
     </div>
-  );
-};
+  )
+}
 
-// Custom hook for media queries
-const useMediaQuery = (query: string): boolean => {
-  const [matches, setMatches] = useState(false);
-
-  useEffect(() => {
-    const media = window.matchMedia(query);
-    if (media.matches !== matches) {
-      setMatches(media.matches);
-    }
-
-    const listener = () => setMatches(media.matches);
-    media.addEventListener('change', listener);
-    
-    return () => media.removeEventListener('change', listener);
-  }, [matches, query]);
-
-  return matches;
-};
-
-export default SectionHeader;
+export default SectionHeader

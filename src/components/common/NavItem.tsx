@@ -171,11 +171,11 @@ export function NavItem({
       <div className="lg:hidden touch-manipulation">
         <motion.div
           className={cn(
-            "flex items-center justify-center w-14 h-14 rounded-full",
+            "flex items-center justify-center w-14 h-14 rounded-full shadow-md",
             "transition-colors duration-300 relative",
-            isActive 
-              ? "text-primary-foreground" 
-              : "text-foreground dark:text-neutral-200"
+            isActive || isHovered 
+              ? "bg-primary text-white" 
+              : "bg-gray-200 dark:bg-gray-700 text-foreground dark:text-gray-300"
           )}
           initial={false}
           animate={isPressed ? "pressed" : "initial"}
@@ -188,7 +188,7 @@ export function NavItem({
               transition: { type: "spring", stiffness: 500, damping: 15 }
             }}
           >
-            <Icon className="w-5 h-5" />
+            <Icon className="w-6 h-6 font-bold" />
           </motion.div>
 
           <AnimatePresence mode="wait">
@@ -196,7 +196,7 @@ export function NavItem({
               layoutId="mobile-active-bg"
               className={cn(
                 "absolute inset-0 rounded-full",
-                isActive ? "bg-primary" : "bg-accent/50"
+                (isActive || isHovered) ? "bg-primary" : "bg-accent/50 dark:bg-accent/20"
               )}
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -206,9 +206,9 @@ export function NavItem({
           </AnimatePresence>
 
           <AnimatePresence>
-            {isActive && (
+            {(isActive || isHovered) && (
               <motion.div
-                className="absolute inset-0 bg-primary/20 rounded-full"
+                className="absolute inset-0 bg-primary/30 rounded-full"
                 variants={glowVariants}
                 initial="initial"
                 animate="animate"
@@ -224,9 +224,9 @@ export function NavItem({
             animate="animate"
             exit="exit"
             className={cn(
-              "absolute left-1/2 -translate-x-1/2 text-xs font-medium mt-1",
+              "absolute left-1/2 -translate-x-1/2 text-xs font-semibold mt-1",
               "transition-colors duration-200",
-              isActive ? "text-primary" : "text-muted-foreground"
+              (isActive || isHovered) ? "text-primary" : "text-foreground dark:text-gray-400"
             )}
           >
             {label}
@@ -239,7 +239,8 @@ export function NavItem({
         <motion.div
           className={cn(
             "relative flex items-center h-12 cursor-pointer",
-            "transition-all duration-300 overflow-hidden"
+            "transition-all duration-300 overflow-hidden",
+            "bg-opacity-80 bg-gray-100 dark:bg-gray-800 shadow-lg rounded-lg"
           )}
           variants={expandVariants}
           animate={isHovered ? "expanded" : "collapsed"}
@@ -248,10 +249,9 @@ export function NavItem({
             <motion.div
               layoutId="desktop-active-bg"
               className={cn(
-                "absolute inset-0 rounded-full z-10",
-                isActive ? "bg-primary" : "bg-neutral-100"
+                "absolute inset-0 rounded-lg z-10",
+                (isActive || isHovered) ? "bg-primary" : "bg-gray-200 dark:bg-gray-700"
               )}
-            
             />
           </AnimatePresence>
 
@@ -262,10 +262,10 @@ export function NavItem({
             <motion.div
               className={cn(
                 "flex items-center gap-3",
-                "text-white",
-                isActive 
-                  ? "text-primary-foreground" 
-                  : "text-foreground dark:text-neutral-200"
+                "text-white font-semibold",
+                (isActive || isHovered) 
+                  ? "text-white" 
+                  : "text-foreground dark:text-gray-300"
               )}
               animate={{ 
                 x: isExpanding ? 4 : 0,
@@ -278,11 +278,11 @@ export function NavItem({
                   transition: { duration: 0.5, ease: "easeInOut" }
                 }}
               >
-                <Icon className="w-5 h-5 flex-shrink-0" />
+                <Icon className="w-6 h-6 font-bold flex-shrink-0" />
               </motion.div>
               
               <motion.span
-                className="font-medium whitespace-nowrap"
+                className="font-semibold whitespace-nowrap"
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ 
                   opacity: isHovered ? 1 : 0,
@@ -298,9 +298,9 @@ export function NavItem({
             </motion.div>
           </motion.div>
 
-          {isActive && (
+          {(isActive || isHovered) && (
             <motion.div
-              className="absolute inset-0 bg-primary/10 rounded-full"
+              className="absolute inset-0 bg-primary/40 rounded-lg"
               variants={glowVariants}
               initial="initial"
               animate="animate"
@@ -311,4 +311,3 @@ export function NavItem({
     </motion.div>
   );
 }
-

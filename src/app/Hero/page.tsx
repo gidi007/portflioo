@@ -1,179 +1,129 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-'use client';
+"use client"
 
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Images } from 'lucide-react';
-import { AnimatedProfile } from './AnimatedProfile';
-import { Button } from '@/components/ui/button';
-import EnhancedAnimatedText from './animated-text';
-import { EnhancedContactModal } from './ContactModal';
-import { AboutModal } from '../Hero/about-modal';
-import { cn } from '@/lib/utils';
-import { ContactModal } from '../About/contact-modal';
-
-const images = [
-  { src: '/images/hero-modal/pic1.jpg', alt: 'Website with stunning layout', link: '#' },
-  { src: '/images/hero-modal/pic2.jpg', alt: 'Website with impressive styling', link: '#' },
-  { src: '/images/hero-modal/pic3.jpg', alt: 'Website with modern UI', link: '#' },
-  { src: '/images/hero-modal/pic4.jpg', alt: 'Website with responsive design', link: '#' }
-];
+import { useState } from "react"
+import { motion } from "framer-motion"
+import { ProfileImage } from "./ProfileImage"
+import { MoreAboutMeButton } from "./MoreAboutMeButton"
+import EnhancedAnimatedText from "./animated-text"
+import { AboutModal } from "./about-modal"
+import { cn } from "@/lib/utils"
 
 export default function HeroSection() {
-  const [isMounted, setIsMounted] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  const contentVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.8,
-        staggerChildren: 0.2,
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        type: 'spring',
-        stiffness: 300,
-        damping: 25
-      }
-    }
-  };
-  
-
-  if (!isMounted) return null;
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false) // <-- Declare state here
 
   return (
-    <div className="relative min-h-screen bg-white dark:bg-neutral-900">
-      <div className="relative z-10 mx-auto px-6 sm:px-8 lg:px-12 max-w-[1400px]">
-        <div className="min-h-screen py-16 sm:py-20 flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-12 lg:gap-20">
-          {/* Profile container - Appears first on mobile */}
+    <div className={cn("relative min-h-screen", "bg-background dark:bg-background-dark", "overflow-hidden")}>
+      {/* Diagonal Background */}
+      <div className="absolute inset-0">
+        {/* Desktop: Diagonal split */}
+        <div className="hidden lg:block relative w-full h-full">
+          {/* Yellow section (left) */}
           <motion.div
-              className="w-[min(100%,230px)] sm:w-[320px] lg:w-[45%] aspect-square lg:aspect-auto lg:h-[calc(100vh-12rem)] max-h-[800px] flex-shrink-0 order-1 lg:order-1"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ 
-              duration: 0.8,
-              delay: 0.2,
-              type: 'spring',
-              stiffness: 100,
-              damping: 20
+            className="absolute inset-0"
+            style={{
+              background: "var(--primary-500)",
+              clipPath: "polygon(0 0, 45% 0, 35% 100%, 0 100%)",
             }}
-          >
-            <AnimatedProfile
-              onClick={() => setIsAboutModalOpen(true)}
-              className="w-full h-full"
-              imageSrc="/placeholder.png"
-              alt="Your Profile"
-            />
-          </motion.div>
+            initial={{ x: "-100%" }}
+            animate={{ x: 0 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+          />
+          {/* White/Dark section (right) */}
+          <div
+            className={cn("absolute inset-0", "bg-background dark:bg-background-dark")}
+            style={{
+              clipPath: "polygon(35% 0, 100% 0, 100% 100%, 25% 100%)",
+            }}
+          />
+        </div>
 
-          {/* Content container */}
-          <motion.div
-            className="flex-1 w-full flex flex-col items-center lg:items-start text-center lg:text-left space-y-8 order-2 lg:order-2"
-            variants={contentVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <motion.div 
-              variants={itemVariants}
-              className="w-full"
+        {/* Mobile: Simple background */}
+        <div className="lg:hidden absolute inset-0 bg-background dark:bg-background-dark" />
+      </div>
+
+      {/* Main Content */}
+      <div className="relative z-10 min-h-screen flex items-center">
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className={cn("grid lg:grid-cols-2 gap-12 lg:gap-20 items-center", "min-h-screen py-20 lg:py-0")}>
+            {/* Profile Image */}
+            <div className={cn("order-1 lg:order-1", "flex justify-center lg:justify-start")}>
+              <ProfileImage imageSrc="/placeholder.png" alt="Favour Bawa" />
+            </div>
+
+            {/* Content */}
+            <motion.div
+              className={cn("order-2 lg:order-2", "text-center lg:text-left", "space-y-8 lg:space-y-10")}
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
             >
-              <EnhancedAnimatedText />
-            </motion.div>
+              {/* Animated Title */}
+              <div className="space-y-4">
+                <motion.div
+                  className="flex items-center justify-center lg:justify-start mb-4"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.8, duration: 0.6 }}
+                >
+                  <div className="w-12 h-0.5 bg-primary-500 dark:bg-primary-400 mr-4" />
+                  <span
+                    className={cn(
+                      "text-sm lg:text-base font-medium tracking-wider uppercase",
+                      "text-foreground-light dark:text-primary-400",
+                    )}
+                  >
+                    I'M FAVOUR BAWA.
+                  </span>
+                </motion.div>
 
-            <motion.div 
-              variants={itemVariants}
-              className="w-full space-y-6"
-            >
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight text-neutral-900 dark:text-white leading-tight">
-                FAVOUR BAWA
-              </h1>
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-amber-500 dark:text-amber-400">
-                Web Designer
-              </h2>
+                <motion.h1
+                  className={cn(
+                    "text-4xl sm:text-5xl lg:text-6xl xl:text-7xl",
+                    "font-bold tracking-tight leading-tight",
+                    "text-foreground dark:text-foreground-dark",
+                  )}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6, duration: 0.8 }}
+                >
+                  WEB DESIGNER
+                </motion.h1>
 
-              <p className="text-lg sm:text-xl text-neutral-600 dark:text-neutral-300 leading-relaxed max-w-2xl">
-                I&apos;m a Nigerian based web designer & front-end developer focused on crafting clean & user-friendly experiences, I&apos;m passionate about building excellent software that improves the lives of those around me.
-              </p>
-            </motion.div>
+                <EnhancedAnimatedText />
+              </div>
 
-            {/* Buttons container */}
-            <motion.div 
-              className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-4"
-              variants={itemVariants}
-            >
-              <Button
-                onClick={() => setIsModalOpen(true)}
+              {/* Description */}
+              <motion.p
                 className={cn(
-                  "h-12 sm:h-14 px-6 sm:px-8",
-                  "rounded-full sm:rounded-lg",
-                  "bg-amber-500 hover:bg-amber-600 dark:bg-amber-500 dark:hover:bg-amber-600",
-                  "text-white",
-                  "shadow-lg hover:shadow-xl",
-                  "ring-2 ring-amber-500/20 hover:ring-amber-600/20",
-                  "transition-all duration-300 hover:scale-105 active:scale-98",
-                  "font-medium text-base"
+                  "text-lg lg:text-xl leading-relaxed",
+                  "text-foreground-light dark:text-muted-dark",
+                  "max-w-2xl mx-auto lg:mx-0",
                 )}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1, duration: 0.6 }}
               >
-                <span className="mr-3">View Projects</span>
-                <Images className="w-5 h-5" />
-              </Button>
+                I'm a Nigerian based web designer & front-end developer focused on crafting clean & user-friendly
+                experiences, I am passionate about building excellent software that improves the lives of those around
+                me.
+              </motion.p>
 
-              <EnhancedContactModal 
-                className={cn(
-                  "h-12 sm:h-14 px-6 sm:px-8",
-                  "rounded-full sm:rounded-lg",
-                  "bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700",
-                  "text-neutral-900 dark:text-amber-400",
-                  "shadow-lg hover:shadow-xl",
-                  "ring-2 ring-neutral-200/50 dark:ring-neutral-700/50",
-                  "transition-all duration-300 hover:scale-105 active:scale-98",
-                  "font-medium text-base"
-                )}
-              />
+              {/* More About Me Button */}
+              <motion.div
+                className="flex justify-center lg:justify-start"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.2, duration: 0.6 }}
+              >
+                <MoreAboutMeButton onClick={() => setIsAboutModalOpen(true)} />
+              </motion.div>
             </motion.div>
-          </motion.div>
+          </div>
         </div>
       </div>
 
-      {/* Modals */}
-           
-
-      <motion.button
-        onClick={() => setIsModalOpen(true)}
-        className="px-6 py-3 bg-primary text-white rounded-xl"
-      >
-        Contact Me
-      </motion.button>
-
-      <ContactModal 
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)} personalInfo={{
-          email: '',
-          linkedIn: '',
-          github: '',
-          twitter: ''
-        }}      />
-
-      <AboutModal 
-        isOpen={isAboutModalOpen}
-        onClose={() => setIsAboutModalOpen(false)}
-      />
+      {/* About Modal */}
+      <AboutModal isOpen={isAboutModalOpen} onClose={() => setIsAboutModalOpen(false)} />
     </div>
-  );
+  )
 }
-

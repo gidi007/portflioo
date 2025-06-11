@@ -1,135 +1,123 @@
-import { useState } from 'react';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { Clock, Tag, Heart, Share2, ExternalLink } from 'lucide-react';
-import { BlogPost, TAG_COLORS } from '../../Types/blog';
+"use client"
+
+import { useState } from "react"
+import { motion } from "framer-motion"
+import Image from "next/image"
+import type { BlogPost } from "../../Types/blog"
+import { cn } from "@/lib/utils"
 
 interface BlogCardProps {
-  post: BlogPost;
-  isLiked: boolean;
-  onLike: (id: number) => void;
-  onShare: (post: BlogPost) => void;
+  post: BlogPost
+  onPostClick: (post: BlogPost) => void
+  index: number
 }
 
-export const BlogCard: React.FC<BlogCardProps> = ({ post, isLiked, onLike, onShare }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const [isExpanded] = useState(false);
+export function BlogCard({ post, onPostClick, index }: BlogCardProps) {
+  const [isHovered, setIsHovered] = useState(false)
 
   return (
     <motion.article
-      layout
+      className="group cursor-pointer"
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 50 }}
-      transition={{ duration: 0.5 }}
-      className="group bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300"
+      transition={{
+        duration: 0.6,
+        delay: index * 0.1,
+        type: "spring",
+        stiffness: 100,
+        damping: 20,
+      }}
+      onClick={() => onPostClick(post)}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
     >
-      <div className="relative aspect-video overflow-hidden">
-        <motion.div
-          animate={isHovered ? { scale: 1.05 } : { scale: 1 }}
-          transition={{ duration: 0.4 }}
-        >
+      <div
+        className={cn(
+          "bg-background-light dark:bg-background-darker",
+          "rounded-2xl overflow-hidden",
+          "shadow-lg hover:shadow-2xl",
+          "transition-all duration-500",
+          "border border-border-light dark:border-border-dark",
+        )}
+      >
+        {/* Image */}
+        <div className="relative aspect-video overflow-hidden">
           <Image
-            src={post.image}
+            src={post.image || "/placeholder.svg"}
             alt={post.title}
             fill
-            className="object-cover"
-            priority
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className={cn("object-cover transition-transform duration-500", "group-hover:scale-110")}
+            priority={index < 3}
           />
-        </motion.div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      </div>
-
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <motion.span 
-            className="text-sm text-gray-600 dark:text-gray-300"
-            whileHover={{ scale: 1.05 }}
-          >
-            {post.date}
-          </motion.span>
-          <div className="flex items-center space-x-3">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => onLike(post.id)}
-              className={`transition-colors duration-300 ${
-                isLiked 
-                  ? 'text-red-500' 
-                  : 'text-gray-400 hover:text-red-500'
-              }`}
-            >
-              <Heart 
-                size={20} 
-                fill={isLiked ? 'currentColor' : 'none'} 
-              />
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => onShare(post)}
-              className="text-gray-400 hover:text-blue-500 transition-colors duration-300"
-            >
-              <Share2 size={20} />
-            </motion.button>
-          </div>
         </div>
 
-        <motion.h3 
-          className="text-xl font-bold mb-3 group-hover:text-primary transition-colors duration-300"
-          layout
+        {/* Content */}
+        <div
+          className={cn(
+            "p-6 lg:p-8",
+            "bg-background-light dark:bg-background-darker",
+            "transition-colors duration-300",
+          )}
         >
-          {post.title}
-        </motion.h3>
+          {/* Date and Read Time */}
+          <div className="flex items-center justify-between mb-4">
+            <span className={cn("text-sm font-medium", "text-foreground-light dark:text-muted-dark")}>{post.date}</span>
+            <span className={cn("text-sm", "text-foreground-light dark:text-muted-dark")}>{post.readTime}</span>
+          </div>
 
-        <motion.div
-          className="mb-4"
-          animate={{ height: isExpanded ? 'auto' : '4.5rem' }}
-        >
-          <p className="text-gray-600 dark:text-gray-300 line-clamp-3">
+          {/* Title */}
+          <motion.h3
+            className={cn(
+              "text-xl lg:text-2xl font-bold mb-4",
+              "text-foreground dark:text-foreground-dark",
+              "line-clamp-2",
+              "transition-colors duration-300",
+            )}
+            animate={{
+              color: isHovered ? "var(--primary-500)" : undefined,
+            }}
+          >
+            {post.title}
+          </motion.h3>
+
+          {/* Excerpt */}
+          <p
+            className={cn(
+              "text-sm lg:text-base leading-relaxed",
+              "text-foreground-light dark:text-muted-dark",
+              "line-clamp-3",
+            )}
+          >
             {post.excerpt}
           </p>
-        </motion.div>
 
-        <div className="flex items-center justify-between mt-6">
-          <div className="flex flex-wrap gap-2">
-            {post.tags.map((tag) => (
-              <motion.span
+          {/* Tags */}
+          <div className="flex flex-wrap gap-2 mt-6">
+            {post.tags.slice(0, 3).map((tag) => (
+              <span
                 key={tag}
-                whileHover={{ scale: 1.05 }}
-                className={`inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-full ${TAG_COLORS[tag]}`}
+                className={cn(
+                  "px-3 py-1 text-xs font-medium rounded-full",
+                  "bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400",
+                )}
               >
-                <Tag size={12} className="mr-1" />
                 {tag}
-              </motion.span>
+              </span>
             ))}
+            {post.tags.length > 3 && (
+              <span
+                className={cn(
+                  "px-3 py-1 text-xs font-medium rounded-full",
+                  "bg-border-light text-foreground-light dark:bg-border-dark dark:text-muted-dark",
+                )}
+              >
+                +{post.tags.length - 3}
+              </span>
+            )}
           </div>
-        </div>
-
-        <div className="mt-6 flex justify-between items-center">
-          <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-            <Clock size={16} className="mr-1" />
-            {post.readTime}
-          </div>
-          
-          {post.mediumUrl && (
-            <motion.a
-              href={post.mediumUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center px-4 py-2 bg-black text-white dark:bg-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors duration-300"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <span className="mr-2 text-xl  ">Medium</span>
-              <ExternalLink size={16} />
-            </motion.a>
-          )}
         </div>
       </div>
     </motion.article>
-  );
-};
-
+  )
+}
