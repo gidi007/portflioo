@@ -1,42 +1,43 @@
-'use client'
+"use client"
 
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import type React from "react"
+import { createContext, useContext, useState, useEffect } from "react"
 
-type Theme = 'light' | 'dark'
+type Theme = "blackout" | "spotlight"
 
 interface ThemeContextType {
   theme: Theme
-  setTheme: (theme: Theme) => void
+  toggleTheme: () => void
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('light')
+export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [theme, setTheme] = useState<Theme>("blackout")
 
+  // Initialize theme from localStorage if available
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') as Theme | null
-    if (savedTheme) {
+    const savedTheme = localStorage.getItem("theme") as Theme
+    if (savedTheme && (savedTheme === "blackout" || savedTheme === "spotlight")) {
       setTheme(savedTheme)
+      document.documentElement.classList.toggle("spotlight", savedTheme === "spotlight")
     }
   }, [])
 
-  useEffect(() => {
-    localStorage.setItem('theme', theme)
-    document.documentElement.classList.toggle('dark', theme === 'dark')
-  }, [theme])
+  const toggleTheme = () => {
+    const newTheme = theme === "blackout" ? "spotlight" : "blackout"
+    setTheme(newTheme)
+    localStorage.setItem("theme", newTheme)
+    document.documentElement.classList.toggle("spotlight", newTheme === "spotlight")
+  }
 
-  return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  )
+  return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>
 }
 
-export function useTheme() {
+export const useTheme = (): ThemeContextType => {
   const context = useContext(ThemeContext)
   if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider')
+    throw new Error("useTheme must be used within a ThemeProvider")
   }
   return context
 }
